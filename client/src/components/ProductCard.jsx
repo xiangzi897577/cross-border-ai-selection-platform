@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { addFavorite } from '../services/api'
 
 function formatMoney(value, symbol) {
   if (typeof value !== 'number') {
@@ -27,9 +28,33 @@ function formatNumber(value, digits = 0) {
 
 function ProductCard({ product }) {
   const [imageLoadError, setImageLoadError] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [favoriteMessage, setFavoriteMessage] = useState('')
+  const [favoriteMessageType, setFavoriteMessageType] = useState('')
   const hasProductId = product?.id !== undefined && product?.id !== null && product?.id !== ''
   const hasImage = typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
   const productName = product?.productName || '暂无'
+
+  async function handleAddFavorite() {
+    if (!hasProductId || favoriteLoading) {
+      return
+    }
+
+    setFavoriteLoading(true)
+    setFavoriteMessage('')
+    setFavoriteMessageType('')
+
+    try {
+      const result = await addFavorite(product.id)
+      setFavoriteMessage(result.message || '已加入候选池')
+      setFavoriteMessageType('success')
+    } catch (requestError) {
+      setFavoriteMessage(requestError.message || '添加候选商品失败')
+      setFavoriteMessageType('error')
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
 
   const cardContent = (
     <>
@@ -98,18 +123,41 @@ function ProductCard({ product }) {
     </>
   )
 
+  const favoriteAction = (
+    <div className="product-card__favorite-area">
+      <button
+        className="product-card__favorite-button"
+        type="button"
+        disabled={!hasProductId || favoriteLoading}
+        onClick={handleAddFavorite}
+      >
+        {favoriteLoading ? '加入中...' : '加入候选池'}
+      </button>
+
+      {favoriteMessage ? (
+        <p className={`product-card__favorite-message product-card__favorite-message--${favoriteMessageType}`}>
+          {favoriteMessage}
+        </p>
+      ) : null}
+    </div>
+  )
+
   if (!hasProductId) {
     return (
       <article className="product-card product-card--disabled" aria-disabled="true">
         {cardContent}
+        {favoriteAction}
       </article>
     )
   }
 
   return (
-    <Link to={`/products/${product.id}`} className="product-card">
-      {cardContent}
-    </Link>
+    <article className="product-card">
+      <Link to={`/products/${product.id}`} className="product-card__link">
+        {cardContent}
+      </Link>
+      {favoriteAction}
+    </article>
   )
 }
 

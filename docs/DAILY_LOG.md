@@ -1219,3 +1219,349 @@ const currentFilePath = fileURLToPath(import.meta.url)
 
 ### 是否更新 DAILY_LOG.md
 - 是，已更新 Day 20 记录
+
+## Day 21 - 2026-05-22：初始化收藏数据
+
+### 今日完成内容
+- 创建了 `server/data/favorites.json`，初始内容为一个空数组 `[]`。
+- 创建了 `server/utils/fileStore.js`，用于封装通用 JSON 文件读写逻辑。
+- 实现了 `readJsonFile(filePath)`，可以读取指定 JSON 文件并返回 JavaScript 数据。
+- 实现了 `writeJsonFile(filePath, data)`，可以把 JavaScript 数据格式化写入指定 JSON 文件。
+- 更新了 `README.md`，将项目状态同步为第四阶段：候选池与 JSON 持久化。
+- 本次只完成候选池数据存储准备，没有实现收藏接口、前端收藏按钮或候选池 UI。
+
+### 修改了哪些文件
+- `server/data/favorites.json`
+- `server/utils/fileStore.js`
+- `README.md`
+- `docs/DAILY_LOG.md`
+
+### 测试方式
+- 使用 Node 临时脚本导入 `readJsonFile` 和 `writeJsonFile`。
+- 读取 `server/data/favorites.json`，确认返回数组且长度为 `0`。
+- 临时写入测试 JSON 文件，再读取回来确认内容一致。
+- 删除临时测试文件，确认没有留下无用测试代码。
+- 回归检查现有后端接口：
+  - `http://localhost:3000/api/health`
+  - `http://localhost:3000/api/products`
+  - `http://localhost:3000/api/dashboard`
+
+### 遇到的问题和解决方式
+- 问题 1：当前项目后端使用 ES Module。
+- 解决方式：`fileStore.js` 使用 `import/export`，不混用 `require/module.exports`。
+- 问题 2：今天只需要准备文件读写工具，不能提前实现收藏业务。
+- 解决方式：只新增 `favorites.json` 和通用工具函数，不注册 `/api/favorites` 路由，不修改前端页面。
+
+### 今日重点理解知识点
+- `favorites.json` 是后续候选池功能的本地 JSON 存储文件，今天先用空数组表示“还没有收藏商品”。
+- `readJsonFile(filePath)` 负责读取 UTF-8 文件内容，再通过 `JSON.parse` 转成 JavaScript 数据。
+- `writeJsonFile(filePath, data)` 负责通过 `JSON.stringify(data, null, 2)` 把 JavaScript 数据格式化成 JSON 文本，再用 UTF-8 写入文件。
+- `fileStore.js` 是通用工具，不写死 `favorites.json`，后续也可以复用到其他 JSON 文件读写场景。
+
+### 明日计划
+- 进入 Day 22，实现 `GET /api/favorites`。
+- 读取 `favorites.json` 中的收藏商品 id，并关联 `products.json` 返回候选池商品列表。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 21 记录
+
+## Day 22 - 2026-05-22：获取候选池接口
+
+### 今日完成内容
+- 创建了 `server/routes/favorites.js`。
+- 实现了 `GET /api/favorites`，用于返回候选池中的收藏商品列表。
+- 使用 Day 21 封装的 `readJsonFile(filePath)` 读取 `server/data/favorites.json` 和 `server/data/products.json`。
+- 根据 `favorites.json` 中保存的商品 `id`，从 `products.json` 中关联对应商品详情。
+- 返回商品前统一调用 `enrichProductMetrics(product)`，保证候选池商品也包含 `profit`、`profitRate`、`profitRatePercent`、`riskLevel`、`competitionLevel`、`recommendationScore` 等增强字段。
+- 当 `favorites.json` 是空数组 `[]` 时，接口正常返回 `[]`。
+- 当某个收藏 `id` 找不到对应商品时，会忽略该 `id`，不会让接口崩溃。
+- 在 `server/app.js` 中注册了 `/api/favorites` 路由。
+- 本次没有实现 `POST /api/favorites` 和 `DELETE /api/favorites/:id`，没有修改前端页面。
+
+### 修改了哪些文件
+- `server/routes/favorites.js`
+- `server/app.js`
+- `docs/DAILY_LOG.md`
+
+### 测试方式
+- 使用临时 Express 服务挂载当前路由到随机端口，避免被本机已有 `3000` 端口进程影响。
+- 空候选池测试：
+  - 保持 `server/data/favorites.json` 为 `[]`。
+  - 请求 `GET /api/favorites`。
+  - 验证返回 `[]`。
+- 有收藏商品测试：
+  - 临时把 `server/data/favorites.json` 写成 `[1, 2, 999]`。
+  - 请求 `GET /api/favorites`。
+  - 验证返回 2 条商品，商品 `id` 为 `1` 和 `2`。
+  - 验证找不到的 `999` 被忽略。
+  - 验证返回商品包含 `profit`、`profitRatePercent`、`riskLevel`、`competitionLevel` 等增强字段。
+  - 测试完成后已把 `favorites.json` 恢复为 `[]`。
+- 回归检查现有接口：
+  - `GET /api/health`
+  - `GET /api/products`
+  - `GET /api/dashboard`
+
+### 遇到的问题和解决方式
+- 问题 1：候选池只保存商品 `id`，但前端后续展示需要完整商品信息和利润、风险等增强字段。
+- 解决方式：接口先读取收藏 `id`，再读取商品列表，用 `Map` 建立 `id -> 商品对象` 的映射，最后对匹配到的商品调用 `enrichProductMetrics(product)`。
+- 问题 2：测试数据需要临时写入 `favorites.json`，但不应该把测试收藏提交到项目里。
+- 解决方式：测试完成后立即恢复 `favorites.json` 为 `[]`。
+
+### 今日重点理解知识点
+- `favorites.json` 只负责保存候选池关系，也就是“哪些商品被收藏了”。
+- `products.json` 才负责保存完整商品详情，避免同一份商品数据在多个文件中重复维护。
+- `Map` 适合做按 `id` 快速查找：先把全部商品变成 `id -> product`，再根据收藏 `id` 取出商品详情。
+- 候选池接口也要复用 `enrichProductMetrics`，这样 `/api/products` 和 `/api/favorites` 返回的商品计算字段保持一致。
+
+### 明日计划
+- 进入 Day 23，实现 `POST /api/favorites`。
+- 支持添加候选商品，并处理商品不存在和重复收藏两种情况。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 22 记录
+
+## Day 23 - 2026-05-22：添加候选商品接口
+
+### 今日完成内容
+- 在 `server/routes/favorites.js` 中实现了 `POST /api/favorites`。
+- 支持从请求体中读取 `productId`，例如 `{ "productId": 1 }`。
+- 增加了 `productId` 校验：缺失、空值、非数字、非整数和小于等于 0 的值都会返回 `400`。
+- 读取 `server/data/products.json`，判断传入的商品是否真实存在。
+- 商品不存在时返回 `404`，避免把无效商品 id 写入候选池。
+- 读取 `server/data/favorites.json`，判断商品是否已经在候选池中。
+- 重复收藏时返回 `409`，并提示“该商品已在候选池中。”
+- 未重复时，只把商品 `id` 写入 `favorites.json`，继续保持简单 id 数组格式。
+- 添加成功后返回成功信息和当前添加的商品详情，商品详情包含 `profit`、`profitRate`、`profitRatePercent`、`riskLevel`、`competitionLevel` 等增强字段。
+- 确认 `server/app.js` 已有 `app.use(express.json())`，不需要重复添加。
+- 在 `server/app.js` 的接口提示中补充了 `POST /api/favorites`。
+
+### 修改了哪些文件
+- `server/routes/favorites.js`
+- `server/app.js`
+- `docs/DAILY_LOG.md`
+
+### 测试方式
+- 使用临时 Express 服务挂载当前 `favoritesRouter`，避免被本机已有 `3000` 端口进程影响。
+- 添加存在的商品：
+  - 请求 `POST /api/favorites`，请求体 `{ "productId": 1 }`。
+  - 验证返回 `201`，并且返回商品详情包含增强字段。
+  - 验证 `favorites.json` 中写入 `1`。
+- 重复添加同一个商品：
+  - 再次请求 `POST /api/favorites`，请求体 `{ "productId": 1 }`。
+  - 验证返回 `409`，并提示该商品已在候选池中。
+  - 验证 `favorites.json` 不会重复写入 `1`。
+- 添加不存在的商品：
+  - 请求体 `{ "productId": 999999 }`。
+  - 验证返回 `404`，提示商品不存在。
+- `productId` 非法：
+  - 请求体 `{ "productId": "abc" }`。
+  - 验证返回 `400`，提示 `productId` 不合法。
+- 回归测试 `GET /api/favorites`：
+  - `favorites.json` 为空时返回 `[]`。
+  - 有收藏 id 时能返回当前候选池商品列表。
+
+### 遇到的问题和解决方式
+- 问题 1：POST 请求需要读取 `req.body`，如果没有 `express.json()` 会读不到 JSON 请求体。
+- 解决方式：检查 `server/app.js`，确认已经存在 `app.use(express.json())`，因此不重复添加。
+- 问题 2：候选池写入时既要能保存收藏关系，又不能造成商品详情重复维护。
+- 解决方式：`favorites.json` 继续只保存商品 `id`，返回详情时再从 `products.json` 关联商品，并复用 `enrichProductMetrics(product)` 生成增强字段。
+- 问题 3：路由中有多个数据文件路径。
+- 解决方式：在 `favorites.js` 中增加简单的 `getDataFilePath(fileName)`，集中处理当前路由所需的数据文件路径。
+
+### 今日重点理解知识点
+- `POST /api/favorites` 的职责是“建立收藏关系”，不是保存完整商品对象。
+- `productId` 需要先通过 `Number()` 转成数字，再用 `Number.isInteger()` 判断是否是合法整数。
+- 判断商品是否存在时，应该读取 `products.json`，用 `find()` 查找 `product.id === productId`。
+- 判断重复收藏时，应该读取 `favorites.json`，用 `includes(productId)` 判断 id 是否已经存在。
+- 写入收藏时使用 `[...favoriteIds, productId]` 生成新数组，再调用 `writeJsonFile()` 写回文件。
+
+### 明日计划
+- 进入 Day 24，实现 `DELETE /api/favorites/:id`。
+- 支持从候选池删除指定商品，并保持 `favorites.json` 持久化更新。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 23 记录
+
+## Day 24 - 2026-05-23：删除候选商品接口
+
+### 今日完成内容
+- 在 `server/routes/favorites.js` 中实现了 `DELETE /api/favorites/:id`。
+- 支持从 URL 参数 `req.params.id` 中读取要删除的 `productId`，例如 `DELETE /api/favorites/1`。
+- 复用已有 `parseProductId()` 校验逻辑，非法 id 会返回 `400`。
+- 使用 `readJsonFile(favoritesFilePath)` 读取 `server/data/favorites.json`。
+- 使用 `favoriteIds.includes(productId)` 判断商品是否已经在候选池中。
+- 当商品不在候选池中时返回 `404`，并提示“该商品不在候选池中，无法删除。”
+- 当商品存在于候选池中时，使用 `filter()` 删除对应 id，并通过 `writeJsonFile()` 写回 `favorites.json`。
+- 删除后 `favorites.json` 继续保持商品 id 数组格式，没有改成对象数组。
+- 在 `server/app.js` 的接口提示中补充了 `DELETE /api/favorites/:id`。
+
+### 修改了哪些文件
+- `server/routes/favorites.js`
+- `server/app.js`
+- `docs/DAILY_LOG.md`
+
+### 测试方式
+- 使用临时 Express 服务挂载当前 `favoritesRouter`，避免被本机已有 `3000` 端口进程影响。
+- 添加商品到候选池：
+  - 请求 `POST /api/favorites`，请求体 `{ "productId": 1 }`。
+  - 验证返回添加成功，且 `favorites.json` 中存在 `1`。
+- 删除已收藏商品：
+  - 请求 `DELETE /api/favorites/1`。
+  - 验证返回删除成功，且 `favorites.json` 中不再包含 `1`。
+- 删除后查看候选池：
+  - 请求 `GET /api/favorites`。
+  - 验证已删除商品不再出现在候选池商品列表中。
+- 删除不存在于候选池的商品：
+  - 请求 `DELETE /api/favorites/999999`。
+  - 验证返回 `404`，并提示该商品不在候选池中。
+- 非法 `productId`：
+  - 请求 `DELETE /api/favorites/abc`。
+  - 验证返回 `400`，并提示 `productId` 不合法。
+- 回归测试已有接口：
+  - `GET /api/favorites` 仍然可以返回候选池商品列表。
+  - `POST /api/favorites` 仍然可以添加候选商品。
+
+### 遇到的问题和解决方式
+- 问题 1：删除接口的 `productId` 来自 URL，而 POST 接口的 `productId` 来自请求体。
+- 解决方式：继续复用 `parseProductId()`，只把输入从 `req.body?.productId` 换成 `req.params.id`，保证两个接口的校验标准一致。
+- 问题 2：删除时不能改变 `favorites.json` 的数据格式。
+- 解决方式：只对 id 数组使用 `filter()` 生成新的 id 数组，再通过 `writeJsonFile()` 写回文件。
+- 问题 3：测试会临时改动 `favorites.json`。
+- 解决方式：测试前记录原始收藏 id，测试完成后恢复，避免把测试数据留在项目中。
+
+### 今日重点理解知识点
+- `DELETE /api/favorites/:id` 的职责是“删除收藏关系”，不是删除商品本身。
+- `req.params.id` 可以读取 URL 路径里的动态参数，例如 `/api/favorites/1` 中的 `1`。
+- `Number()` 和 `Number.isInteger()` 可以把字符串参数校验成合法正整数。
+- `includes(productId)` 用来判断某个商品 id 是否已经在候选池中。
+- `filter((favoriteId) => favoriteId !== productId)` 会创建一个不包含目标 id 的新数组。
+- `writeJsonFile(favoritesFilePath, nextFavoriteIds)` 负责把删除后的候选池 id 数组持久化到 `favorites.json`。
+
+### 明日计划
+- 进入 Day 25，实现前端收藏按钮。
+- 在商品列表和商品详情页接入 `POST /api/favorites`，让用户可以从页面加入候选池。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 24 记录
+
+## Day 25 - 2026-05-23：前端收藏按钮
+
+### 今日完成内容
+- 在 `client/src/services/api.js` 中新增 `addFavorite(productId)`，用于请求 `POST /api/favorites`。
+- 在 `ProductCard` 商品卡片中添加“加入候选池”按钮。
+- 在 `ProductDetailPage` 商品详情页中添加“加入候选池”按钮。
+- 收藏成功后会显示后端返回的成功提示，例如“商品已成功添加到候选池。”。
+- 重复收藏时不会让页面崩溃，会显示后端返回的提示“该商品已在候选池中。”。
+- 收藏请求过程中会禁用按钮，避免连续点击重复提交。
+- 调整了商品卡片结构，让详情跳转 `Link` 和收藏按钮分开，点击收藏按钮不会触发详情页跳转。
+
+### 修改了哪些文件
+- `client/src/services/api.js`
+- `client/src/components/ProductCard.jsx`
+- `client/src/pages/ProductDetailPage.jsx`
+- `client/src/App.css`
+- `docs/DAILY_LOG.md`
+
+### 测试方式
+- 启动后端：
+  - `cd server`
+  - `npm start`
+- 启动前端：
+  - `cd client`
+  - `npm run dev`
+- 访问 `http://localhost:5173/products`：
+  - 点击任意商品卡片里的“加入候选池”，确认有成功提示。
+  - 再次点击同一个商品的“加入候选池”，确认显示重复收藏提示。
+  - 确认点击收藏按钮不会跳转详情页。
+  - 点击商品卡片主体，确认仍然可以进入详情页。
+- 访问 `http://localhost:5173/products/1`：
+  - 点击详情页里的“加入候选池”，确认有成功提示。
+  - 再次点击，确认重复收藏不会崩溃。
+- 访问 `http://localhost:3000/api/favorites`：
+  - 确认从列表页或详情页收藏后的商品出现在候选池接口结果中。
+  - 确认重复收藏不会在 `favorites.json` 中重复写入同一个 `productId`。
+
+### 遇到的问题和解决方式
+- 问题 1：`ProductCard` 原来整体由 `Link` 包裹，如果直接把按钮放进 `Link`，点击按钮可能触发详情跳转。
+- 解决方式：把卡片外层改为 `article.product-card`，让商品主体内容单独作为 `Link`，收藏按钮放在 `Link` 外面。
+- 问题 2：前端需要显示后端返回的 409 重复收藏提示。
+- 解决方式：调整 `requestJson` 的错误处理，让接口错误时能结合状态码文案和后端 JSON 中的 `message` 字段。
+
+### 今日重点理解知识点
+- `addFavorite(productId)` 是前端服务层函数，页面组件不直接写 `fetch` 细节。
+- `POST /api/favorites` 的请求体是 `{ productId }`，后端只保存商品 id，不保存完整商品对象。
+- 收藏按钮需要独立处理 loading、message 和错误状态，不能影响页面原有数据加载状态。
+- 商品卡片里“跳详情”和“加入候选池”是两个不同用户动作，结构上也应该分开。
+
+### 明日计划
+- 进入 Day 26，实现 `FavoritesPage` 候选池页面。
+- 请求 `GET /api/favorites` 展示候选池商品列表，并接入删除收藏能力。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 25 记录
+
+## Day 26 - 2026-05-25：FavoritesPage 候选池页面
+
+### 今日完成内容
+- 在 `client/src/services/api.js` 中新增 `getFavorites()`，用于请求 `GET /api/favorites`。
+- 在 `client/src/services/api.js` 中新增 `removeFavorite(productId)`，用于请求 `DELETE /api/favorites/:id`。
+- 完成 `FavoritesPage` 候选池页面真实业务实现。
+- 页面加载时请求候选池接口，并展示收藏商品列表。
+- 支持 `loading / error / empty / success` 四种页面状态。
+- 候选池为空时显示“候选池暂无商品，请先从商品列表添加。”。
+- 每个候选商品展示图片、商品名称、类目、Amazon 售价、1688 成本、利润率、评分和竞争指数。
+- 支持点击候选商品内容进入 `/products/:id` 商品详情页。
+- 支持点击“取消收藏”，调用 `removeFavorite(product.id)` 删除收藏。
+- 删除成功后，使用 `filter()` 立即更新当前页面列表。
+- 删除失败时，在页面中显示错误提示。
+
+### 修改了哪些文件
+- `client/src/services/api.js`
+- `client/src/pages/FavoritesPage.jsx`
+- `client/src/App.css`
+- `docs/DAILY_LOG.md`
+
+### 测试方式
+- 启动后端：
+  - `cd server`
+  - `npm start`
+- 启动前端：
+  - `cd client`
+  - `npm run dev`
+- 访问候选池页面：
+  - `http://localhost:5173/favorites`
+- 联动测试：
+  - 打开 `http://localhost:5173/products`
+  - 点击任意商品的“加入候选池”
+  - 打开 `http://localhost:5173/favorites`
+  - 确认商品出现在候选池中
+  - 点击商品内容，确认可以进入商品详情页
+  - 点击“取消收藏”，确认页面列表立即更新
+  - 刷新候选池页面，确认被删除商品不会再次出现
+  - 检查 `server/data/favorites.json`，确认对应 `productId` 已被删除
+- 前端检查：
+  - `cd client`
+  - `npm run lint`
+  - `npm run build`
+
+### 遇到的问题和解决方式
+- 问题 1：`ProductCard` 已经带有“加入候选池”按钮，直接复用会让候选池页面出现错误操作。
+- 解决方式：在 `FavoritesPage` 内部写轻量的 `FavoriteProductItem`，只保留候选池需要的展示、详情跳转和取消收藏能力。
+- 问题 2：点击“取消收藏”不能触发商品详情跳转。
+- 解决方式：把商品内容放在 `Link` 中，把“取消收藏”按钮放在 `Link` 外面，两个操作互不影响。
+- 问题 3：删除成功后需要页面立即变化，同时刷新后仍然持久化。
+- 解决方式：前端删除成功后用 `setFavorites(current => current.filter(...))` 更新页面；后端 `DELETE /api/favorites/:id` 已经负责写回 `favorites.json`，刷新后会从 JSON 文件重新读取最新结果。
+
+### 今日重点理解知识点
+- `getFavorites()` 是候选池列表读取函数，只负责请求 `GET /api/favorites`，并校验返回值必须是数组。
+- `removeFavorite(productId)` 是删除收藏函数，只负责请求 `DELETE /api/favorites/:id`，并校验返回值必须是对象。
+- `FavoritesPage` 中页面主数据状态是 `favorites`，请求状态是 `loading` 和 `error`，删除错误单独用 `removeError` 管理。
+- 删除收藏后不需要重新刷新整个页面，可以先基于当前数组用 `filter()` 移除目标商品，让用户马上看到结果。
+- 候选池页面的详情跳转使用 React Router 的 `Link` 指向 `/products/${product.id}`。
+
+### 明日计划
+- 进入 Day 27，安装并使用 Recharts。
+- 创建基础图表组件，为后续 Dashboard 图表展示做准备。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 26 记录

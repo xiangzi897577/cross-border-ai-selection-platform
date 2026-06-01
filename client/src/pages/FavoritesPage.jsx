@@ -1,9 +1,216 @@
-function FavoritesPage() {
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { getFavorites, removeFavorite } from '../services/api'
+
+function formatMoney(value, symbol) {
+  if (typeof value !== 'number') {
+    return '-'
+  }
+
+  return `${symbol}${value.toFixed(2)}`
+}
+
+function formatPercent(value) {
+  if (typeof value !== 'number') {
+    return '0.0%'
+  }
+
+  return `${value.toFixed(1)}%`
+}
+
+function formatNumber(value, digits = 0) {
+  if (typeof value !== 'number') {
+    return digits === 0 ? '0' : (0).toFixed(digits)
+  }
+
+  return value.toFixed(digits)
+}
+
+function FavoriteProductItem({ product, removingProductId, onRemove }) {
+  const [imageLoadError, setImageLoadError] = useState(false)
+  const hasProductId = product?.id !== undefined && product?.id !== null && product?.id !== ''
+  const isRemoving = hasProductId && removingProductId === product.id
+  const productName = product?.productName || '暂无'
+  const hasImage = typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
+
   return (
-    <section className="page">
+    <article className="favorite-card">
+      <Link
+        to={hasProductId ? `/products/${product.id}` : '/products'}
+        className="favorite-card__link"
+      >
+        <div className="favorite-card__image-wrapper">
+          {hasImage ? (
+            <img
+              className="favorite-card__image"
+              src={product.image}
+              alt={productName}
+              onError={() => setImageLoadError(true)}
+            />
+          ) : (
+            <div className="favorite-card__image-placeholder">暂无图片</div>
+          )}
+        </div>
+
+        <div className="favorite-card__content">
+          <div className="favorite-card__header">
+            <p className="favorite-card__category">{product?.category || '暂无'}</p>
+            <h3 className="favorite-card__title">{productName}</h3>
+          </div>
+
+          <div className="favorite-card__metrics">
+            <div className="favorite-card__metric">
+              <span className="favorite-card__metric-label">Amazon 售价</span>
+              <strong className="favorite-card__metric-value">
+                {formatMoney(product?.amazonPrice, '$')}
+              </strong>
+            </div>
+
+            <div className="favorite-card__metric">
+              <span className="favorite-card__metric-label">1688 成本</span>
+              <strong className="favorite-card__metric-value">
+                {formatMoney(product?.cost1688, '¥')}
+              </strong>
+            </div>
+
+            <div className="favorite-card__metric">
+              <span className="favorite-card__metric-label">利润率</span>
+              <strong className="favorite-card__metric-value">
+                {formatPercent(product?.profitRatePercent)}
+              </strong>
+            </div>
+
+            <div className="favorite-card__metric">
+              <span className="favorite-card__metric-label">评分</span>
+              <strong className="favorite-card__metric-value">
+                {formatNumber(product?.rating, 1)}
+              </strong>
+            </div>
+
+            <div className="favorite-card__metric">
+              <span className="favorite-card__metric-label">竞争指数</span>
+              <strong className="favorite-card__metric-value">
+                {formatNumber(product?.competitionScore)}
+              </strong>
+            </div>
+          </div>
+
+          <span className="favorite-card__detail-hint">
+            {hasProductId ? `查看商品 #${product.id} 详情` : '缺少商品 id'}
+          </span>
+        </div>
+      </Link>
+
+      <div className="favorite-card__actions">
+        <button
+          className="favorite-card__remove-button"
+          type="button"
+          disabled={!hasProductId || isRemoving}
+          onClick={() => onRemove(product)}
+        >
+          {isRemoving ? '取消中...' : '取消收藏'}
+        </button>
+      </div>
+    </article>
+  )
+}
+
+function FavoritesPage() {
+  const [favorites, setFavorites] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [removeError, setRemoveError] = useState('')
+  const [removingProductId, setRemovingProductId] = useState(null)
+
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    async function fetchFavorites() {
+      setLoading(true)
+      setError('')
+      setRemoveError('')
+      setFavorites([])
+
+      try {
+        const favoritesData = await getFavorites({ signal: abortController.signal })
+        setFavorites(favoritesData)
+      } catch (requestError) {
+        if (requestError.name !== 'AbortError') {
+          setError(requestError.message || '获取候选池商品失败')
+        }
+      } finally {
+        if (!abortController.signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    fetchFavorites()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [])
+
+  async function handleRemoveFavorite(product) {
+    if (!product?.id || removingProductId !== null) {
+      return
+    }
+
+    setRemovingProductId(product.id)
+    setRemoveError('')
+
+    try {
+      await removeFavorite(product.id)
+      setFavorites((currentFavorites) =>
+        currentFavorites.filter((favoriteProduct) => favoriteProduct.id !== product.id),
+      )
+    } catch (requestError) {
+      setRemoveError(requestError.message || '取消收藏失败')
+    } finally {
+      setRemovingProductId(null)
+    }
+  }
+
+  const hasFavorites = favorites.length > 0
+
+  return (
+    <section className="page favorites-page">
       <h2 className="page-title">候选池</h2>
-      <p className="page-description">这里后续会展示加入候选池的手机支架商品。</p>
-      <p className="page-note page-note--empty">当前只保留页面占位，不提前实现 favorites 逻辑。</p>
+      <p className="page-description">
+        当前页面会请求 Node 后端的 <code>/api/favorites</code> 接口，展示已经加入候选池的手机支架商品。
+      </p>
+
+      {loading ? <p className="page-note page-note--loading">候选池加载中...</p> : null}
+
+      {!loading && error ? <p className="page-note page-note--error">请求失败：{error}</p> : null}
+
+      {!loading && !error && removeError ? (
+        <p className="page-note page-note--error">取消收藏失败：{removeError}</p>
+      ) : null}
+
+      {!loading && !error && !hasFavorites ? (
+        <p className="page-note page-note--empty">候选池暂无商品，请先从商品列表添加。</p>
+      ) : null}
+
+      {!loading && !error && hasFavorites ? (
+        <>
+          <p className="page-note page-note--info">
+            当前候选池共有 <strong>{favorites.length}</strong> 件商品，点击商品内容可进入详情页。
+          </p>
+
+          <div className="favorites-page__list">
+            {favorites.map((product) => (
+              <FavoriteProductItem
+                key={product.id ?? product.productName}
+                product={product}
+                removingProductId={removingProductId}
+                onRemove={handleRemoveFavorite}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
     </section>
   )
 }

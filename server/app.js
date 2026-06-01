@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import productsRouter from './routes/products.js'
 import dashboardRouter from './routes/dashboard.js'
+import favoritesRouter from './routes/favorites.js'
 
 const app = express()
 const PORT = 3000
@@ -18,6 +19,9 @@ app.get('/', (req, res) => {
       'GET /api/products',
       'GET /api/products/:id',
       'GET /api/dashboard',
+      'GET /api/favorites',
+      'POST /api/favorites',
+      'DELETE /api/favorites/:id',
     ],
   })
 })
@@ -31,6 +35,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/products', productsRouter)
 app.use('/api/dashboard', dashboardRouter)
+app.use('/api/favorites', favoritesRouter)
 
 app.use((req, res) => {
   res.status(404).json({
@@ -42,6 +47,9 @@ app.use((req, res) => {
       'GET /api/products',
       'GET /api/products/:id',
       'GET /api/dashboard',
+      'GET /api/favorites',
+      'POST /api/favorites',
+      'DELETE /api/favorites/:id',
     ],
   })
 })
@@ -52,4 +60,7 @@ app.listen(PORT, () => {
   console.log(`Products API: http://localhost:${PORT}/api/products`)
   console.log(`Product detail API: http://localhost:${PORT}/api/products/1`)
   console.log(`Dashboard API: http://localhost:${PORT}/api/dashboard`)
+  console.log(`Favorites API: http://localhost:${PORT}/api/favorites`)
+  console.log(`Add favorite API: POST http://localhost:${PORT}/api/favorites`)
+  console.log(`Delete favorite API: DELETE http://localhost:${PORT}/api/favorites/1`)
 })

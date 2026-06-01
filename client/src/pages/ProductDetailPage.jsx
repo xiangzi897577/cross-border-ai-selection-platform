@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getProductById } from '../services/api'
+import { addFavorite, getProductById } from '../services/api'
 
 const levelTextMap = {
   low: '低',
@@ -64,6 +64,9 @@ function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [imageLoadError, setImageLoadError] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [favoriteMessage, setFavoriteMessage] = useState('')
+  const [favoriteMessageType, setFavoriteMessageType] = useState('')
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -73,6 +76,9 @@ function ProductDetailPage() {
       setError('')
       setProduct(null)
       setImageLoadError(false)
+      setFavoriteMessage('')
+      setFavoriteMessageType('')
+      setFavoriteLoading(false)
 
       try {
         const productData = await getProductById(id, { signal: abortController.signal })
@@ -94,6 +100,27 @@ function ProductDetailPage() {
       abortController.abort()
     }
   }, [id])
+
+  async function handleAddFavorite() {
+    if (!product?.id || favoriteLoading) {
+      return
+    }
+
+    setFavoriteLoading(true)
+    setFavoriteMessage('')
+    setFavoriteMessageType('')
+
+    try {
+      const result = await addFavorite(product.id)
+      setFavoriteMessage(result.message || '已加入候选池')
+      setFavoriteMessageType('success')
+    } catch (requestError) {
+      setFavoriteMessage(requestError.message || '添加候选商品失败')
+      setFavoriteMessageType('error')
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
 
   const hasImage =
     typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
@@ -148,6 +175,25 @@ function ProductDetailPage() {
                 <code>useParams()</code> 读取路由参数，再调用 <code>getProductById(id)</code>{' '}
                 请求后端接口。
               </p>
+
+              <div className="detail-page__favorite-area">
+                <button
+                  className="detail-page__favorite-button"
+                  type="button"
+                  disabled={favoriteLoading}
+                  onClick={handleAddFavorite}
+                >
+                  {favoriteLoading ? '加入中...' : '加入候选池'}
+                </button>
+
+                {favoriteMessage ? (
+                  <p
+                    className={`detail-page__favorite-message detail-page__favorite-message--${favoriteMessageType}`}
+                  >
+                    {favoriteMessage}
+                  </p>
+                ) : null}
+              </div>
 
               <div className="detail-page__tag-list">
                 {tags.length > 0 ? (

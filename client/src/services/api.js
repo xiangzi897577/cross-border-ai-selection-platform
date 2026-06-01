@@ -1,13 +1,17 @@
 const API_BASE_URL = 'http://localhost:3000'
 const BACKEND_CONNECTION_ERROR = '无法连接到后端服务，请确认 http://localhost:3000 已启动'
 
-function getRequestErrorMessage(status, errorMessages) {
+function getRequestErrorMessage(status, errorMessages, data) {
   if (errorMessages && typeof errorMessages[status] === 'string') {
     return errorMessages[status]
   }
 
   if (errorMessages && typeof errorMessages.default === 'string') {
     return errorMessages.default
+  }
+
+  if (data && typeof data === 'object' && typeof data.message === 'string') {
+    return data.message
   }
 
   return '请求失败'
@@ -53,7 +57,7 @@ async function requestJson(path, errorMessages, options = {}) {
   const data = await readResponseData(response)
 
   if (!response.ok) {
-    throw new Error(getRequestErrorMessage(response.status, errorMessages))
+    throw new Error(getRequestErrorMessage(response.status, errorMessages, data))
   }
 
   return data
@@ -124,4 +128,66 @@ export async function getDashboard(options = {}) {
   }
 
   return dashboard
+}
+
+export async function addFavorite(productId, options = {}) {
+  const favoriteResult = await requestJson(
+    '/api/favorites',
+    {
+      400: '商品 id 不合法，无法加入候选池',
+      404: '商品不存在，无法加入候选池',
+      409: '该商品已在候选池中。',
+      default: '添加候选商品失败',
+    },
+    {
+      ...options,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      body: JSON.stringify({ productId }),
+    },
+  )
+
+  if (!favoriteResult || typeof favoriteResult !== 'object' || Array.isArray(favoriteResult)) {
+    throw new Error('添加候选商品返回数据格式不正确')
+  }
+
+  return favoriteResult
+}
+
+export async function getFavorites(options = {}) {
+  const favorites = await requestJson(
+    '/api/favorites',
+    { default: '获取候选池商品失败' },
+    options,
+  )
+
+  if (!Array.isArray(favorites)) {
+    throw new Error('候选池商品数据格式不正确')
+  }
+
+  return favorites
+}
+
+export async function removeFavorite(productId, options = {}) {
+  const removeResult = await requestJson(
+    `/api/favorites/${productId}`,
+    {
+      400: '商品 id 不合法，无法取消收藏',
+      404: '该商品不在候选池中，无法取消收藏',
+      default: '取消收藏失败',
+    },
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  )
+
+  if (!removeResult || typeof removeResult !== 'object' || Array.isArray(removeResult)) {
+    throw new Error('取消收藏返回数据格式不正确')
+  }
+
+  return removeResult
 }

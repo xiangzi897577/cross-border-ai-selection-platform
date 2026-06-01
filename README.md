@@ -8,19 +8,20 @@
 
 ## 当前阶段
 
-当前处于 **Day 14：第二周复盘**。
+当前处于 **第四阶段：候选池与 JSON 持久化**。
 
-这一阶段的重点不是新增功能，而是把第二周已经完成的前端基础页面和后端接口联调稳定下来，确保当前主流程可以正常运行。
+当前已经完成第三阶段的商品搜索、类目筛选、利润率筛选、排序和筛选器整合，商品列表主流程已经具备基础选品效率。
 
-目前已经完成的核心检查范围：
+第四阶段会在现有商品数据和前后端联调基础上，开始实现“收藏 / 候选池”能力。当前 Day 21 已先完成候选池数据文件和通用 JSON 文件读写工具，为后续接口开发做准备。
 
-- React Router 主路由
-- Dashboard 首页数据看板
-- Products 商品列表页
-- Product Detail 商品详情页
-- 前端 `services/api.js` 请求封装
-- 前后端基础联调
-- 小范围样式整理
+当前阶段重点：
+
+- 使用 `server/data/favorites.json` 作为候选池本地存储文件
+- 使用 `server/utils/fileStore.js` 封装通用 JSON 文件读写逻辑
+- 后续实现 `GET /api/favorites`
+- 后续实现 `POST /api/favorites`
+- 后续实现 `DELETE /api/favorites/:id`
+- 最后接入前端收藏按钮和候选池页面
 
 ## 技术栈
 
@@ -52,6 +53,13 @@
 - `GET /api/products/:id`
 - `GET /api/dashboard`
 
+### 后端工具与数据文件
+
+- `server/data/products.json`：商品 mock 数据
+- `server/data/favorites.json`：候选池收藏数据，当前初始内容为 `[]`
+- `server/utils/productMetrics.js`：商品利润、风险、竞争、推荐评分等计算逻辑
+- `server/utils/fileStore.js`：通用 JSON 文件读取和写入工具
+
 ### 前端页面
 
 - `/`：Dashboard 数据看板页
@@ -65,6 +73,8 @@
 - 已完成整体 Layout、Sidebar、Header
 - 已完成 Sidebar 导航切换与当前项高亮
 - 商品列表页直接请求 Node 后端 `GET /api/products`
+- 商品列表页支持关键词搜索、类目筛选、利润率筛选和排序
+- 商品筛选控件已整合为 `ProductFilters`
 - 商品详情页使用路由参数请求 `GET /api/products/:id`
 - Dashboard 页直接请求 `GET /api/dashboard`
 - 商品列表卡片支持跳转详情页
@@ -86,6 +96,22 @@
 - `profitRatePercent`
 - `competitionLevel`
 - `riskLevel`
+- `recommendationScore`
+
+当前支持的查询参数：
+
+- `keyword`：按商品名、类目、标签搜索
+- `category`：按手机支架类目筛选
+- `minProfitRate`：按最低利润率百分比筛选，例如 `20`、`30`、`40`
+- `sort`：按指定方式排序
+
+当前支持的排序方式：
+
+- `profitRateDesc`：利润率从高到低
+- `monthlySalesDesc`：月销量从高到低
+- `ratingDesc`：评分从高到低
+- `competitionScoreAsc`：竞争指数从低到高
+- `recommendationScoreDesc`：推荐评分从高到低
 
 ### `GET /api/products/:id`
 
@@ -107,6 +133,21 @@
 - `topProfitProducts`
 - `categoryDistribution`
 - `averageCompetitionScore`
+
+## 当前数据持久化说明
+
+当前项目不使用数据库，后端通过本地 JSON 文件模拟轻量数据存储。
+
+- 商品数据存放在 `server/data/products.json`
+- 收藏数据存放在 `server/data/favorites.json`
+- 通用读写逻辑封装在 `server/utils/fileStore.js`
+
+`fileStore.js` 当前导出两个函数：
+
+- `readJsonFile(filePath)`：读取指定 JSON 文件，并通过 `JSON.parse` 转成 JavaScript 数据
+- `writeJsonFile(filePath, data)`：使用 `JSON.stringify(data, null, 2)` 将 JavaScript 数据格式化写入 JSON 文件
+
+这一步是后续候选池接口的基础，但当前还没有正式实现收藏接口。
 
 ## 本地运行方式
 
@@ -136,6 +177,10 @@ npm run dev
 
 - [http://localhost:3000/api/health](http://localhost:3000/api/health)
 - [http://localhost:3000/api/products](http://localhost:3000/api/products)
+- [http://localhost:3000/api/products?keyword=车载](http://localhost:3000/api/products?keyword=车载)
+- [http://localhost:3000/api/products?category=车载支架](http://localhost:3000/api/products?category=车载支架)
+- [http://localhost:3000/api/products?minProfitRate=30](http://localhost:3000/api/products?minProfitRate=30)
+- [http://localhost:3000/api/products?sort=profitRateDesc](http://localhost:3000/api/products?sort=profitRateDesc)
 - [http://localhost:3000/api/products/1](http://localhost:3000/api/products/1)
 - [http://localhost:3000/api/products/999](http://localhost:3000/api/products/999)
 - [http://localhost:3000/api/products/abc](http://localhost:3000/api/products/abc)
@@ -167,18 +212,18 @@ npm run dev
 
 - `AnalysisPage` 和 `FavoritesPage` 目前还是占位页，尚未进入真实业务实现阶段
 - 商品图片路径已经预留，但当前主要依赖前端图片失败兜底展示
-- 目前还没有搜索、筛选、排序、收藏、图表等第三周之后的功能
+- 当前已经有搜索、筛选和排序功能，但还没有收藏接口和候选池页面真实数据
+- 当前还没有图表可视化，后续会接入 Recharts
 
 ## 下一阶段计划
 
-第三周会在当前稳定主流程的基础上，继续进入以下方向：
+第四阶段会围绕候选池功能继续开发：
 
-- 搜索功能
-- 类目筛选
-- 利润率筛选
-- 商品排序
-- 候选池功能
-- 更完整的分析展示
+- `GET /api/favorites`：获取候选池商品
+- `POST /api/favorites`：添加候选商品
+- `DELETE /api/favorites/:id`：删除候选商品
+- 商品列表和详情页接入收藏按钮
+- `FavoritesPage` 展示候选池商品列表
 
 ## 项目说明
 
@@ -189,4 +234,6 @@ npm run dev
 - 有后端接口
 - 有前端页面和路由
 - 有前后端联调主流程
+- 有搜索、筛选、排序等基础选品操作
+- 已开始进入 JSON 持久化和候选池功能阶段
 - 有每日开发记录，方便复盘和面试讲解

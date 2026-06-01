@@ -57,36 +57,34 @@ function ProductsPage() {
   useEffect(() => {
     const abortController = new AbortController()
 
-    // async function fetchInitialProducts() {
-    //   const requestId = latestRequestId.current + 1
-    //   latestRequestId.current = requestId
+    async function fetchInitialProducts() {
+      const requestId = latestRequestId.current + 1
+      latestRequestId.current = requestId
 
-    //   setLoading(true)
-    //   setError('')
-    //   setProducts([])
+      setLoading(true)
+      setError('')
+      setProducts([])
 
-    //   try {
-    //     const productsData = await getProducts(DEFAULT_FILTERS, {
-    //       signal: abortController.signal,
-    //     })
-    //     if (requestId === latestRequestId.current) {
-    //       setProducts(productsData)
-    //     }
-    //   } catch (requestError) {
-    //     if (requestError.name !== 'AbortError' && requestId === latestRequestId.current) {
-    //       setError(requestError.message || '获取商品列表失败')
-    //     }
-    //   } finally {
-    //     if (!abortController.signal.aborted && requestId === latestRequestId.current) {
-    //       setLoading(false)
-    //     }
-    //   }
-    // }
-    // fetchInitialProducts()
+      try {
+        const productsData = await getProducts(DEFAULT_FILTERS, {
+          signal: abortController.signal,
+        })
+        if (requestId === latestRequestId.current) {
+          setProducts(productsData)
+        }
+      } catch (requestError) {
+        if (requestError.name !== 'AbortError' && requestId === latestRequestId.current) {
+          setError(requestError.message || '获取商品列表失败')
+        }
+      } finally {
+        if (!abortController.signal.aborted && requestId === latestRequestId.current) {
+          setLoading(false)
+        }
+      }
+    }
 
-    loadProducts(DEFAULT_FILTERS, {
-      signal: abortController.signal,
-    })
+    fetchInitialProducts()
+
     return () => {
       abortController.abort()
     }
