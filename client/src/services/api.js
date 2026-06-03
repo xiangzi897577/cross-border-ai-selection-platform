@@ -1,5 +1,5 @@
-const API_BASE_URL = 'http://localhost:3000'
-const BACKEND_CONNECTION_ERROR = '无法连接到后端服务，请确认 http://localhost:3000 已启动'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+const BACKEND_CONNECTION_ERROR = `无法连接到后端服务，请确认 ${API_BASE_URL} 已启动或配置正确`
 
 function getRequestErrorMessage(status, errorMessages, data) {
   if (errorMessages && typeof errorMessages[status] === 'string') {

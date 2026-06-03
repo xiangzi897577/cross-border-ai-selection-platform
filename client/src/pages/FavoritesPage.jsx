@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getFavorites, removeFavorite } from '../services/api'
 
+const DEFAULT_PRODUCT_IMAGE = '/images/products/placeholder.png'
+
 function formatMoney(value, symbol) {
   if (typeof value !== 'number') {
     return '-'
@@ -31,7 +33,10 @@ function FavoriteProductItem({ product, removingProductId, onRemove }) {
   const hasProductId = product?.id !== undefined && product?.id !== null && product?.id !== ''
   const isRemoving = hasProductId && removingProductId === product.id
   const productName = product?.productName || '暂无'
-  const hasImage = typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
+  const productImage =
+    typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
+      ? product.image
+      : DEFAULT_PRODUCT_IMAGE
 
   return (
     <article className="favorite-card">
@@ -40,16 +45,12 @@ function FavoriteProductItem({ product, removingProductId, onRemove }) {
         className="favorite-card__link"
       >
         <div className="favorite-card__image-wrapper">
-          {hasImage ? (
-            <img
-              className="favorite-card__image"
-              src={product.image}
-              alt={productName}
-              onError={() => setImageLoadError(true)}
-            />
-          ) : (
-            <div className="favorite-card__image-placeholder">暂无图片</div>
-          )}
+          <img
+            className="favorite-card__image"
+            src={productImage}
+            alt={productName}
+            onError={() => setImageLoadError(true)}
+          />
         </div>
 
         <div className="favorite-card__content">

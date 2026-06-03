@@ -1940,8 +1940,222 @@ const currentFilePath = fileURLToPath(import.meta.url)
 - 前端详情页和分析页只负责展示后端返回的风险结果，不重新计算业务规则。
 
 ### 明日计划
-- 进入 Day 33，全局 UI 优化。
-- 统一页面间距、颜色、标签和按钮细节，让项目更接近可展示作品。
+- 进入 Day 33，部署前检查与最小上线验证。
+- 检查前端构建、API 环境变量、React Router 刷新、后端端口、CORS 和 JSON 存储上线风险。
 
 ### 是否更新 DAILY_LOG.md
 - 是，已更新 Day 32 记录
+
+## Day 33 - 2026-06-03：部署前检查与最小上线验证
+
+### 今日目标
+- 检查项目是否具备前端 Vercel、后端 Render 的最小上线条件。
+- 提前处理前端构建、API 地址、React Router 刷新、后端端口和 CORS 等部署前问题。
+- 不做正式部署，不新增业务功能，不引入数据库，不接真实 API，不做大范围重构。
+
+### 今日完成内容
+- 已执行前端生产构建检查：`cd client` 后运行 `npm run build`，构建成功。
+- 将前端 API 基地址从写死 `http://localhost:3000` 调整为支持 `VITE_API_BASE_URL`。
+- 本地开发默认 API 地址仍然是 `http://localhost:3000`。
+- 新增 `client/vercel.json`，让 Vercel 把 `/products`、`/products/1`、`/favorites`、`/analysis` 等前端路由 fallback 到 `index.html`。
+- 将后端启动端口调整为 `process.env.PORT || 3000`，本地仍默认使用 `3000`，Render 可使用平台注入端口。
+- 检查后端 CORS：当前使用 `app.use(cors())`，允许所有来源，适合当前演示阶段的 Vercel 前端请求 Render 后端。
+- 复查当前 JSON 文件存储方案：`products.json` 和 `favorites.json` 适合本地 mock 和演示，但部署平台上的本地文件写入不适合作为长期稳定持久化方案。
+
+### 修改了哪些文件
+- `client/src/services/api.js`
+- `client/vercel.json`
+- `server/app.js`
+- `docs/DAILY_LOG.md`
+
+### 每个文件修改了什么
+- `client/src/services/api.js`：新增 `import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'`，让前端可在本地和线上后端之间切换。
+- `client/vercel.json`：新增 Vercel rewrite 配置，解决 React Router 页面刷新后可能 404 的问题。
+- `server/app.js`：将端口从固定 `3000` 改为 `process.env.PORT || 3000`。
+- `docs/DAILY_LOG.md`：记录 Day 33 部署前检查结果、风险说明和后续部署方案。
+
+### 前端 build 检查结果
+- `npm run build` 成功。
+- 构建输出中有 Vite chunk 体积提示，但不是构建失败；Day 33 不为该提示做拆包或大范围重构。
+
+### API 地址环境变量适配
+- 本地默认：
+  - `http://localhost:3000`
+- 线上部署时在 Vercel 配置：
+  - `VITE_API_BASE_URL=Render 后端线上地址`
+- 现有 `getProducts`、`getProductById`、`getDashboard`、`getFavorites`、`addFavorite`、`removeFavorite` 等接口函数保持不变。
+
+### React Router / Vercel rewrite 检查
+- 已添加 `client/vercel.json`。
+- 作用是让 Vercel 在直接访问或刷新以下路径时返回 `index.html`：
+  - `/products`
+  - `/products/1`
+  - `/favorites`
+  - `/analysis`
+- 该配置不影响本地 Vite 开发环境。
+
+### 后端 process.env.PORT 检查
+- 后端已支持：
+  - `const PORT = process.env.PORT || 3000`
+- 本地仍然可以通过 `npm start` 使用 `3000`。
+- Render 部署时可以使用平台注入的 `PORT`。
+
+### CORS 检查
+- 当前后端使用：
+  - `app.use(cors())`
+- 含义是允许所有来源请求后端接口。
+- 对当前作品演示阶段来说，Vercel 前端请求 Render 后端是可用的。
+- 后续如果要更接近生产环境，可以再改成通过环境变量配置允许的前端域名，但今天不做复杂权限或鉴权系统。
+
+### favorites.json 在线上持久化风险
+- 当前 `server/data/favorites.json` 适合本地 mock、学习和演示。
+- Render 等部署平台上的本地文件写入可能不是长期稳定持久化方案，服务重启、重新部署或实例变化后可能丢失写入数据。
+- 今天不迁移数据库，不改变现有 favorites 功能。
+- 后续如果需要长期保存收藏数据，应迁移到数据库，并尽量保持现有 API 行为不变。
+
+### 部署方案
+- 前端部署平台：Vercel。
+- 后端部署平台：Render。
+- 前端环境变量：
+  - `VITE_API_BASE_URL=Render 后端线上地址`
+- 后端需要支持：
+  - `process.env.PORT`
+- 前端需要支持：
+  - React Router 刷新不 404。
+
+### 测试方式
+- 前端构建：
+  - `cd client`
+  - `npm run build`
+- 后端本地运行：
+  - `cd server`
+  - `npm start`
+- 后端接口检查：
+  - `http://localhost:3000/api/health`
+  - `http://localhost:3000/api/products`
+  - `http://localhost:3000/api/dashboard`
+  - `http://localhost:3000/api/favorites`
+- 前端本地运行：
+  - `cd client`
+  - `npm run dev`
+- 前端页面检查：
+  - `http://localhost:5173/`
+  - `http://localhost:5173/products`
+  - `http://localhost:5173/products/1`
+  - `http://localhost:5173/favorites`
+  - `http://localhost:5173/analysis`
+
+### 遇到的问题和解决方式
+- 问题 1：前端 API 地址写死 `http://localhost:3000`，线上部署后会请求用户本机而不是 Render 后端。
+- 解决方式：改为优先读取 `VITE_API_BASE_URL`，没有配置时再使用本地默认地址。
+- 问题 2：后端端口写死 `3000`，Render 等平台部署时可能无法绑定平台分配端口。
+- 解决方式：改为 `process.env.PORT || 3000`。
+- 问题 3：React Router 的前端路由直接刷新时，Vercel 可能找不到对应静态文件。
+- 解决方式：新增 `client/vercel.json`，统一 fallback 到 `index.html`。
+
+### 今日重点理解知识点
+- `VITE_API_BASE_URL` 是前端构建时注入的环境变量，用来区分本地后端和线上后端。
+- `process.env.PORT` 是部署平台给 Node 服务注入的运行端口，后端不能只写死本地端口。
+- `vercel.json` 的 rewrite 解决的是前端路由刷新问题，不是后端接口代理问题。
+- JSON 文件存储适合 mock 阶段，但不是线上长期持久化方案。
+
+### 明日计划
+- 进入 Day 34，补齐商品图片与图片兜底。
+- 优先保证商品列表、详情页、候选池页面的图片路径稳定，不依赖外部热链。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 33 记录
+
+## Day 34 - 2026-06-03：商品图片补齐与图片兜底
+
+### 今日目标
+- 补齐 20 个手机支架商品的本地 mock 图片。
+- 让商品列表、商品详情页和候选池页面都能展示商品图。
+- 增加默认占位图，避免图片缺失或路径错误时出现破图。
+- 不修改后端业务接口，不接真实 API，不引入数据库，不新增业务功能。
+
+### 今日完成内容
+- 已将用户提供的 20 张手机支架产品图整理到 `client/public/images/products/`。
+- 新增默认占位图 `client/public/images/products/placeholder.png`。
+- 根据商品名称和类目，为 `server/data/products.json` 中 20 个商品匹配本地图片。
+- 为每个商品补充或规范 `image`、`imageSource`、`sourceImageUrl` 字段。
+- `ProductCard` 现在直接展示商品图片，图片缺失或加载失败时切换默认占位图。
+- `ProductDetailPage` 现在展示更大的商品图，图片缺失或加载失败时切换默认占位图。
+- `FavoritesPage` 现在展示候选池商品图片，图片缺失或加载失败时切换默认占位图。
+- 为商品列表、详情页和候选池图片补充基础尺寸、内边距和 `object-fit: contain` 样式，避免图片变形或被裁切。
+- 为商品列表、商品详情和候选池图片增加悬浮层次感，鼠标停留时图片轻微放大并出现柔和渐变阴影。
+
+### 修改了哪些文件
+- `client/public/images/products/`
+- `server/data/products.json`
+- `client/src/components/ProductCard.jsx`
+- `client/src/pages/ProductDetailPage.jsx`
+- `client/src/pages/FavoritesPage.jsx`
+- `client/src/App.css`
+- `docs/DAILY_LOG.md`
+
+### products.json 图片字段说明
+- `image`：使用前端 public 目录下的本地静态资源路径，例如 `/images/products/car-suction-phone-stand-01.png`。
+- `imageSource`：当前统一为 `local_mock`，表示图片来自本地 mock 资源。
+- `sourceImageUrl`：当前统一为空字符串，为后续接入 1688 或其他真实图片源预留。
+
+### 商品图片匹配结果
+- `1 / 可折叠桌面手机支架 / /images/products/desktop-adjustable-stand-02.png`
+- `2 / 真空吸盘车载手机支架 / /images/products/car-suction-phone-stand-01.png`
+- `3 / 磁吸出风口车载手机支架 / /images/products/magnetic-air-vent-car-stand-01.png`
+- `4 / 铝合金升降桌面手机支架 / /images/products/desktop-metal-stand-01.png`
+- `5 / 直播补光三脚手机支架 / /images/products/live-fill-light-tripod-stand-01.png`
+- `6 / 鹅颈懒人手机支架 / /images/products/lazy-gooseneck-phone-stand-01.png`
+- `7 / 平板手机两用折叠支架 / /images/products/foldable-tablet-phone-stand-01.png`
+- `8 / 迷你口袋折叠手机支架 / /images/products/foldable-pocket-phone-stand-02.png`
+- `9 / 摩托车防震手机导航支架 / /images/products/car-motorcycle-anti-shock-stand-02.png`
+- `10 / 床头夹式360旋转手机支架 / /images/products/lazy-bed-clip-360-stand-02.png`
+- `11 / 磁吸无线充桌面手机支架 / /images/products/magnetic-wireless-charging-desktop-stand-02.png`
+- `12 / 桌面直播俯拍手机支架 / /images/products/live-overhead-desktop-stand-02.png`
+- `13 / 可拆卸磁吸折叠桌面手机支架 / /images/products/magnetic-detachable-foldable-desktop-stand-03.png`
+- `14 / 双夹臂懒人床头手机支架 / /images/products/lazy-dual-arm-bed-stand-03.png`
+- `15 / 便携旅行卡片式手机支架 / /images/products/foldable-travel-card-stand-03.png`
+- `16 / 硅胶绑带自行车手机支架 / /images/products/car-bike-silicone-strap-stand-03.png`
+- `17 / 平板手机两用升降直播支架 / /images/products/live-tablet-phone-lift-stand-03.png`
+- `18 / 迷你折叠磁吸旅行手机支架 / /images/products/foldable-magnetic-travel-stand-04.png`
+- `19 / 汽车后视镜夹式手机支架 / /images/products/car-rearview-mirror-clip-stand-04.png`
+- `20 / 伸缩补光直播桌面手机支架 / /images/products/live-telescopic-fill-light-desktop-stand-04.png`
+
+### 测试方式
+- 启动后端：
+  - `cd server`
+  - `npm start`
+- 启动前端：
+  - `cd client`
+  - `npm run dev`
+- 页面检查：
+  - `http://localhost:5173/products`
+  - `http://localhost:5173/products/1`
+  - `http://localhost:5173/favorites`
+- 兜底测试：
+  - 临时把某个商品的 `image` 改成错误路径，确认页面展示 `/images/products/placeholder.png`，而不是破图图标。
+- 静态检查：
+  - `cd client`
+  - `npm run lint`
+  - `npm run build`
+
+### 遇到的问题和解决方式
+- 问题 1：第一次复制图片时使用了 `Copy-Item -LiteralPath '...\*.png'`，通配符没有展开，只复制了占位图。
+- 解决方式：改用 `Copy-Item -Path '...\*.png'` 批量复制 20 张图片。
+- 问题 2：旧数据中的 `image` 指向 `/images/phone-holder-x.jpg`，但 public 目录下没有这些文件。
+- 解决方式：统一改成 `/images/products/*.png` 本地路径。
+- 问题 3：原页面在图片缺失时显示文字占位，不适合作品展示。
+- 解决方式：三个页面统一使用 `/images/products/placeholder.png` 兜底。
+
+### 今日重点理解知识点
+- Vite 的 `public` 目录会作为静态资源根目录直接暴露，`client/public/images/products/a.png` 在页面中应写成 `/images/products/a.png`。
+- `products.json` 中不能写 `client/public/...` 文件系统路径，也不需要写完整外部 URL。
+- 图片加载失败时可以通过 `<img onError>` 修改状态，把 `src` 切换到默认占位图。
+- 当前 `imageSource` 和 `sourceImageUrl` 是为未来真实图片源预留的字段，今天只使用本地 mock 图片。
+
+### 明日计划
+- 进入 Day 35，全局 UI 优化。
+- 统一后台系统视觉风格、卡片间距、按钮和标签样式。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 34 记录

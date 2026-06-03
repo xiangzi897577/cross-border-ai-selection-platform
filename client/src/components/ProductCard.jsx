@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { addFavorite } from '../services/api'
 
+const DEFAULT_PRODUCT_IMAGE = '/images/products/placeholder.png'
+
 function formatMoney(value, symbol) {
   if (typeof value !== 'number') {
     return '-'
@@ -32,7 +34,10 @@ function ProductCard({ product }) {
   const [favoriteMessage, setFavoriteMessage] = useState('')
   const [favoriteMessageType, setFavoriteMessageType] = useState('')
   const hasProductId = product?.id !== undefined && product?.id !== null && product?.id !== ''
-  const hasImage = typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
+  const productImage =
+    typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
+      ? product.image
+      : DEFAULT_PRODUCT_IMAGE
   const productName = product?.productName || '暂无'
 
   async function handleAddFavorite() {
@@ -59,16 +64,12 @@ function ProductCard({ product }) {
   const cardContent = (
     <>
       <div className="product-card__image-wrapper">
-        {hasImage ? (
-          <img
-            className="product-card__image"
-            src={product.image}
-            alt={productName}
-            onError={() => setImageLoadError(true)}
-          />
-        ) : (
-          <div className="product-card__image-placeholder">暂无图片</div>
-        )}
+        <img
+          className="product-card__image"
+          src={productImage}
+          alt={productName}
+          onError={() => setImageLoadError(true)}
+        />
       </div>
 
       <div className="product-card__body">

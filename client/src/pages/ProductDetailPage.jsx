@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { addFavorite, getProductById } from '../services/api'
 
+const DEFAULT_PRODUCT_IMAGE = '/images/products/placeholder.png'
+
 const levelTextMap = {
   low: '低',
   medium: '中',
@@ -122,8 +124,10 @@ function ProductDetailPage() {
     }
   }
 
-  const hasImage =
+  const productImage =
     typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
+      ? product.image
+      : DEFAULT_PRODUCT_IMAGE
   const tags = Array.isArray(product?.tags) ? product.tags : []
   const riskFactors = Array.isArray(product?.riskFactors) ? product.riskFactors : []
   const currentProductId = product?.id ?? id
@@ -155,16 +159,12 @@ function ProductDetailPage() {
         <>
           <div className="detail-page__hero">
             <div className="detail-page__image-panel">
-              {hasImage ? (
-                <img
-                  className="detail-page__image"
-                  src={product.image}
-                  alt={formatText(product.productName)}
-                  onError={() => setImageLoadError(true)}
-                />
-              ) : (
-                <div className="detail-page__image-placeholder">暂无图片</div>
-              )}
+              <img
+                className="detail-page__image"
+                src={productImage}
+                alt={formatText(product.productName)}
+                onError={() => setImageLoadError(true)}
+              />
             </div>
 
             <div className="detail-page__summary">

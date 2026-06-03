@@ -789,19 +789,44 @@
 }
 
 .product-card__image-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   aspect-ratio: 4 / 3;
+  overflow: hidden;
   background:
     radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 42%),
     linear-gradient(135deg, #f0fdfa 0%, #eff6ff 100%);
 }
 
+.product-card__image-wrapper::after,
+.favorite-card__image-wrapper::after,
+.detail-page__image-panel::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(180deg, transparent 55%, rgba(15, 23, 42, 0.08) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
 .product-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  box-sizing: border-box;
+  padding: 12px;
+  object-fit: contain;
+  transition: transform 0.24s ease;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.04);
+}
+
+.product-card:hover .product-card__image-wrapper::after {
+  opacity: 1;
 }
 
 .product-card__image-placeholder {
@@ -974,9 +999,11 @@
 }
 
 .favorite-card__image-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  aspect-ratio: 4 / 3;
   min-height: 150px;
   overflow: hidden;
   border-radius: 18px;
@@ -988,7 +1015,18 @@
 .favorite-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  box-sizing: border-box;
+  padding: 10px;
+  object-fit: contain;
+  transition: transform 0.24s ease;
+}
+
+.favorite-card:hover .favorite-card__image {
+  transform: scale(1.04);
+}
+
+.favorite-card:hover .favorite-card__image-wrapper::after {
+  opacity: 1;
 }
 
 .favorite-card__image-placeholder {
@@ -1138,9 +1176,11 @@
 }
 
 .detail-page__image-panel {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  aspect-ratio: 1 / 1;
   min-height: 320px;
   overflow: hidden;
   background:
@@ -1151,7 +1191,18 @@
 .detail-page__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  box-sizing: border-box;
+  padding: 18px;
+  object-fit: contain;
+  transition: transform 0.24s ease;
+}
+
+.detail-page__image-panel:hover .detail-page__image {
+  transform: scale(1.035);
+}
+
+.detail-page__image-panel:hover::after {
+  opacity: 1;
 }
 
 .detail-page__image-placeholder {

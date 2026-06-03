@@ -15,9 +15,18 @@
     "volumeLevel": "small",
     "material": "ABS+硅胶",
     "supplier": "义乌市简诺支架厂",
-    "image": "/images/phone-holder-1.jpg",
-    "tags": ["轻小件", "桌面", "可折叠"],
-    "riskFactors": ["桌面支架同质化较多", "ABS材质在高温环境下耐久性一般"],
+    "image": "/images/products/desktop-metal-stand-01.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "轻小件",
+      "桌面",
+      "可折叠"
+    ],
+    "riskFactors": [
+      "桌面支架同质化较多",
+      "ABS材质在高温环境下耐久性一般"
+    ],
     "recommendationReason": "成本低、体积小，适合做入门款桌面支架。"
   },
   {
@@ -36,9 +45,18 @@
     "volumeLevel": "small",
     "material": "ABS+TPU",
     "supplier": "深圳市驰稳车品厂",
-    "image": "/images/phone-holder-2.jpg",
-    "tags": ["车载", "热销", "轻小件"],
-    "riskFactors": ["车载品类竞争强", "吸盘稳定性容易被差评放大"],
+    "image": "/images/products/car-suction-phone-stand-01.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "车载",
+      "热销",
+      "轻小件"
+    ],
+    "riskFactors": [
+      "车载品类竞争强",
+      "吸盘稳定性容易被差评放大"
+    ],
     "recommendationReason": "车载需求稳定，月销潜力高，适合后续做差异化卖点分析。"
   },
   {
@@ -57,9 +75,18 @@
     "volumeLevel": "small",
     "material": "磁铁+硅胶+ABS",
     "supplier": "东莞市磁拓电子配件厂",
-    "image": "/images/phone-holder-3.jpg",
-    "tags": ["磁吸", "车载", "安装便捷"],
-    "riskFactors": ["磁吸力度体验主观性强", "部分厚壳手机兼容性一般"],
+    "image": "/images/products/magnetic-air-vent-car-stand-01.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "磁吸",
+      "车载",
+      "安装便捷"
+    ],
+    "riskFactors": [
+      "磁吸力度体验主观性强",
+      "部分厚壳手机兼容性一般"
+    ],
     "recommendationReason": "重量轻、安装简单，适合做磁吸细分类目爆款候选。"
   },
   {
@@ -78,9 +105,18 @@
     "volumeLevel": "medium",
     "material": "铝合金+硅胶",
     "supplier": "佛山市稳派金属制品厂",
-    "image": "/images/phone-holder-4.jpg",
-    "tags": ["铝合金", "桌面", "高客单"],
-    "riskFactors": ["金属材质导致采购成本偏高", "重量高于普通塑料款"],
+    "image": "/images/products/desktop-adjustable-stand-02.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "铝合金",
+      "桌面",
+      "高客单"
+    ],
+    "riskFactors": [
+      "金属材质导致采购成本偏高",
+      "重量高于普通塑料款"
+    ],
     "recommendationReason": "客单价较高，质感强，适合提升利润空间和产品调性。"
   },
   {
@@ -99,9 +135,18 @@
     "volumeLevel": "large",
     "material": "铝合金+ABS",
     "supplier": "中山市创播摄影器材厂",
-    "image": "/images/phone-holder-5.jpg",
-    "tags": ["直播", "三脚架", "大件偏轻"],
-    "riskFactors": ["包装体积较大", "配件多导致售后问题更多"],
+    "image": "/images/products/live-fill-light-tripod-stand-01.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "直播",
+      "三脚架",
+      "大件偏轻"
+    ],
+    "riskFactors": [
+      "包装体积较大",
+      "配件多导致售后问题更多"
+    ],
     "recommendationReason": "直播场景明确，功能丰富，适合后续做多配件套装分析。"
   },
   {
@@ -120,9 +165,18 @@
     "volumeLevel": "medium",
     "material": "碳钢+ABS+硅胶",
     "supplier": "宁波市乐躺家居配件厂",
-    "image": "/images/phone-holder-6.jpg",
-    "tags": ["懒人", "床头", "居家场景"],
-    "riskFactors": ["长臂结构运输弯折风险较高", "夹持稳定性容易引发售后"],
+    "image": "/images/products/lazy-gooseneck-phone-stand-01.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "懒人",
+      "床头",
+      "居家场景"
+    ],
+    "riskFactors": [
+      "长臂结构运输弯折风险较高",
+      "夹持稳定性容易引发售后"
+    ],
     "recommendationReason": "居家使用场景清晰，需求稳定，适合分析结构型支架风险。"
   },
   {
@@ -141,9 +195,18 @@
     "volumeLevel": "medium",
     "material": "ABS+铝合金",
     "supplier": "惠州市倍适数码支架厂",
-    "image": "/images/phone-holder-7.jpg",
-    "tags": ["平板两用", "折叠", "办公"],
-    "riskFactors": ["承重能力说明不清容易退货", "适配大尺寸平板时稳定性要求更高"],
+    "image": "/images/products/foldable-tablet-phone-stand-01.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "平板两用",
+      "折叠",
+      "办公"
+    ],
+    "riskFactors": [
+      "承重能力说明不清容易退货",
+      "适配大尺寸平板时稳定性要求更高"
+    ],
     "recommendationReason": "兼容手机和平板，适用人群更广，后续适合做场景化筛选。"
   },
   {
@@ -162,9 +225,18 @@
     "volumeLevel": "small",
     "material": "ABS",
     "supplier": "汕头市易携塑胶制品厂",
-    "image": "/images/phone-holder-8.jpg",
-    "tags": ["折叠", "便携", "低成本"],
-    "riskFactors": ["低价段价格战明显", "塑料转轴耐久性需要关注"],
+    "image": "/images/products/foldable-pocket-phone-stand-02.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "折叠",
+      "便携",
+      "低成本"
+    ],
+    "riskFactors": [
+      "低价段价格战明显",
+      "塑料转轴耐久性需要关注"
+    ],
     "recommendationReason": "轻小件优势明显，物流友好，适合利润率和销量模型测试。"
   },
   {
@@ -183,9 +255,18 @@
     "volumeLevel": "medium",
     "material": "铝合金+尼龙",
     "supplier": "温州市骑行配件工厂店",
-    "image": "/images/phone-holder-9.jpg",
-    "tags": ["摩托车", "防震", "户外"],
-    "riskFactors": ["安装结构较复杂", "户外使用场景对耐久性要求高"],
+    "image": "/images/products/car-motorcycle-anti-shock-stand-02.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "摩托车",
+      "防震",
+      "户外"
+    ],
+    "riskFactors": [
+      "安装结构较复杂",
+      "户外使用场景对耐久性要求高"
+    ],
     "recommendationReason": "细分场景明确，竞争相对可控，适合做差异化产品线。"
   },
   {
@@ -204,9 +285,18 @@
     "volumeLevel": "medium",
     "material": "碳钢+ABS+硅胶",
     "supplier": "台州市舒卧家居支架厂",
-    "image": "/images/phone-holder-10.jpg",
-    "tags": ["床头", "夹式", "居家"],
-    "riskFactors": ["夹具兼容不同床头厚度存在限制", "长时间使用可能出现松动"],
+    "image": "/images/products/lazy-bed-clip-360-stand-02.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "床头",
+      "夹式",
+      "居家"
+    ],
+    "riskFactors": [
+      "夹具兼容不同床头厚度存在限制",
+      "长时间使用可能出现松动"
+    ],
     "recommendationReason": "客群场景明确，搜索词集中，适合后续做场景类筛选和详情页展示。"
   },
   {
@@ -214,7 +304,7 @@
     "productName": "磁吸无线充桌面手机支架",
     "category": "磁吸支架",
     "amazonPrice": 26.99,
-    "cost1688": 24.6,
+    "cost1688": 90,
     "shippingCost": 8.1,
     "platformFeeRate": 0.15,
     "estimatedMonthlySales": 450,
@@ -225,9 +315,18 @@
     "volumeLevel": "medium",
     "material": "铝合金+磁铁+PC",
     "supplier": "深圳市极充智能配件厂",
-    "image": "/images/phone-holder-11.jpg",
-    "tags": ["磁吸", "无线充", "桌面"],
-    "riskFactors": ["电子功能增加售后复杂度", "MagSafe兼容性描述需要准确"],
+    "image": "/images/products/magnetic-wireless-charging-desktop-stand-02.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "磁吸",
+      "无线充",
+      "桌面"
+    ],
+    "riskFactors": [
+      "电子功能增加售后复杂度",
+      "MagSafe兼容性描述需要准确"
+    ],
     "recommendationReason": "功能复合度高，适合后续分析高客单磁吸品的利润与风险。"
   },
   {
@@ -246,9 +345,18 @@
     "volumeLevel": "large",
     "material": "碳钢+ABS",
     "supplier": "广州市映享直播器材厂",
-    "image": "/images/phone-holder-12.jpg",
-    "tags": ["直播", "俯拍", "内容创作"],
-    "riskFactors": ["评论基数偏少", "大尺寸包装会抬高头程和尾程成本"],
+    "image": "/images/products/live-overhead-desktop-stand-02.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "直播",
+      "俯拍",
+      "内容创作"
+    ],
+    "riskFactors": [
+      "评论基数偏少",
+      "大尺寸包装会抬高头程和尾程成本"
+    ],
     "recommendationReason": "竞争相对不高，适合做直播细分场景的新手选品样本。"
   },
   {
@@ -267,9 +375,18 @@
     "volumeLevel": "small",
     "material": "铝合金+磁铁+硅胶",
     "supplier": "深圳市磁立方数码配件厂",
-    "image": "/images/phone-holder-13.jpg",
-    "tags": ["磁吸", "桌面", "可拆卸"],
-    "riskFactors": ["磁吸面板需兼顾不同手机壳厚度", "折叠结构需关注转轴耐久性"],
+    "image": "/images/products/magnetic-detachable-foldable-desktop-stand-03.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "磁吸",
+      "桌面",
+      "可拆卸"
+    ],
+    "riskFactors": [
+      "磁吸面板需兼顾不同手机壳厚度",
+      "折叠结构需关注转轴耐久性"
+    ],
     "recommendationReason": "利润空间和便携性表现均衡，适合做磁吸办公场景选品。"
   },
   {
@@ -288,9 +405,18 @@
     "volumeLevel": "medium",
     "material": "碳钢+ABS+硅胶",
     "supplier": "台州市享躺家居支架厂",
-    "image": "/images/phone-holder-14.jpg",
-    "tags": ["床头", "懒人", "双夹臂"],
-    "riskFactors": ["长杆结构对包装保护要求较高", "床头板厚度兼容性需要明确说明"],
+    "image": "/images/products/lazy-dual-arm-bed-stand-03.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "床头",
+      "懒人",
+      "双夹臂"
+    ],
+    "riskFactors": [
+      "长杆结构对包装保护要求较高",
+      "床头板厚度兼容性需要明确说明"
+    ],
     "recommendationReason": "居家追剧场景稳定，竞争适中，适合做床头支架类目补充。"
   },
   {
@@ -309,9 +435,18 @@
     "volumeLevel": "small",
     "material": "PP+硅胶",
     "supplier": "汕头市轻旅塑胶制品厂",
-    "image": "/images/phone-holder-15.jpg",
-    "tags": ["便携", "旅行", "轻小件"],
-    "riskFactors": ["超轻薄产品容易被低价竞品模仿", "承重上限需要在详情页中说明清楚"],
+    "image": "/images/products/foldable-travel-card-stand-03.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "便携",
+      "旅行",
+      "轻小件"
+    ],
+    "riskFactors": [
+      "超轻薄产品容易被低价竞品模仿",
+      "承重上限需要在详情页中说明清楚"
+    ],
     "recommendationReason": "体积和成本优势明显，适合做轻小件高利润率样本。"
   },
   {
@@ -330,9 +465,18 @@
     "volumeLevel": "small",
     "material": "硅胶+尼龙",
     "supplier": "义乌市骑安户外配件厂",
-    "image": "/images/phone-holder-16.jpg",
-    "tags": ["自行车", "户外", "绑带"],
-    "riskFactors": ["户外震动场景容易放大稳定性问题", "高温暴晒下硅胶老化需关注"],
+    "image": "/images/products/car-bike-silicone-strap-stand-03.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "自行车",
+      "户外",
+      "绑带"
+    ],
+    "riskFactors": [
+      "户外震动场景容易放大稳定性问题",
+      "高温暴晒下硅胶老化需关注"
+    ],
     "recommendationReason": "安装门槛低、轻便易发货，适合做骑行类入门款分析。"
   },
   {
@@ -351,9 +495,18 @@
     "volumeLevel": "medium",
     "material": "铝合金+ABS",
     "supplier": "惠州市稳屏数码支架厂",
-    "image": "/images/phone-holder-17.jpg",
-    "tags": ["平板两用", "直播", "升降"],
-    "riskFactors": ["承重大时稳定性要求更高", "多关节结构会提高装配复杂度"],
+    "image": "/images/products/live-tablet-phone-lift-stand-03.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "平板两用",
+      "直播",
+      "升降"
+    ],
+    "riskFactors": [
+      "承重大时稳定性要求更高",
+      "多关节结构会提高装配复杂度"
+    ],
     "recommendationReason": "兼顾直播和办公场景，客单价更高，适合利润与竞争综合分析。"
   },
   {
@@ -372,9 +525,18 @@
     "volumeLevel": "small",
     "material": "ABS+磁铁+硅胶",
     "supplier": "东莞市旅伴数码配件厂",
-    "image": "/images/phone-holder-18.jpg",
-    "tags": ["旅行", "折叠", "磁吸"],
-    "riskFactors": ["旅行场景转化依赖图片展示", "磁吸兼容性和稳定性说明要完整"],
+    "image": "/images/products/foldable-magnetic-travel-stand-04.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "旅行",
+      "折叠",
+      "磁吸"
+    ],
+    "riskFactors": [
+      "旅行场景转化依赖图片展示",
+      "磁吸兼容性和稳定性说明要完整"
+    ],
     "recommendationReason": "兼顾便携和功能卖点，适合做中价位旅行支架样本。"
   },
   {
@@ -393,9 +555,18 @@
     "volumeLevel": "small",
     "material": "ABS+金属弹簧",
     "supplier": "深圳市路稳车载支架厂",
-    "image": "/images/phone-holder-19.jpg",
-    "tags": ["车载", "后视镜", "夹式"],
-    "riskFactors": ["不同车型后视镜结构差异大", "安装不当容易引发差评"],
+    "image": "/images/products/car-rearview-mirror-clip-stand-04.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "车载",
+      "后视镜",
+      "夹式"
+    ],
+    "riskFactors": [
+      "不同车型后视镜结构差异大",
+      "安装不当容易引发差评"
+    ],
     "recommendationReason": "细分安装方式有一定搜索需求，适合做高竞争车载品对比分析。"
   },
   {
@@ -414,9 +585,18 @@
     "volumeLevel": "medium",
     "material": "铝合金+ABS+LED补光组件",
     "supplier": "中山市映创直播器材厂",
-    "image": "/images/phone-holder-20.jpg",
-    "tags": ["直播", "补光", "桌面"],
-    "riskFactors": ["补光组件会增加售后咨询量", "多功能款需要更清晰的配件说明"],
+    "image": "/images/products/live-telescopic-fill-light-desktop-stand-04.png",
+    "imageSource": "local_mock",
+    "sourceImageUrl": "",
+    "tags": [
+      "直播",
+      "补光",
+      "桌面"
+    ],
+    "riskFactors": [
+      "补光组件会增加售后咨询量",
+      "多功能款需要更清晰的配件说明"
+    ],
     "recommendationReason": "直播需求明确，竞争不算过高，适合作为功能型支架候选。"
   }
 ]
