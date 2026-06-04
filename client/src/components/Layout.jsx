@@ -8,7 +8,6 @@ function Layout({ children }) {
 
       <div className="dashboard-layout__content">
         <Header />
-        {/* children is the content of the page that will be rendered inside the layout */}
         <main className="dashboard-layout__main">
           <div className="dashboard-layout__page">{children}</div>
         </main>

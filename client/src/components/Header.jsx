@@ -4,22 +4,22 @@ const headerConfig = {
   '/': {
     eyebrow: 'Dashboard',
     title: '数据看板',
-    description: '检查 Dashboard 指标展示和后端统计接口联调是否稳定。',
+    description: '汇总商品池规模、利润表现、潜力商品和风险商品，快速判断当前选品盘面。',
   },
   '/products': {
     eyebrow: 'Products',
     title: '商品列表',
-    description: '检查商品列表请求、搜索筛选入口和基础卡片展示是否稳定。',
+    description: '按关键词、类目、利润率和排序维度筛选手机支架候选商品，优先锁定值得跟进的款式。',
   },
   '/analysis': {
     eyebrow: 'Analysis',
     title: '选品分析',
-    description: '检查选品分析页的业务分区、推荐理由和详情跳转是否稳定。',
+    description: '从高潜力、高风险、低竞争高利润三个角度拆解商品机会，辅助做选品决策。',
   },
   '/favorites': {
     eyebrow: 'Favorites',
     title: '候选池',
-    description: '检查候选池页面的收藏商品展示和基础状态反馈是否稳定。',
+    description: '沉淀待跟进商品，集中对比利润、评分和竞争指标，方便后续复盘筛选。',
   },
 }
 
@@ -28,7 +28,7 @@ function getHeaderConfig(pathname) {
     return {
       eyebrow: 'Product Detail',
       title: '商品详情',
-      description: '检查商品详情页路由参数、详情接口请求和核心字段展示是否稳定。',
+      description: '查看单个商品的价格成本、利润空间、市场指标、风险因素和推荐依据。',
     }
   }
 

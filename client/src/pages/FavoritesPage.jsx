@@ -4,6 +4,13 @@ import { getFavorites, removeFavorite } from '../services/api'
 
 const DEFAULT_PRODUCT_IMAGE = '/images/products/placeholder.png'
 
+const riskLevelTextMap = {
+  low: '低风险',
+  medium: '中风险',
+  high: '高风险',
+  unknown: '风险未知',
+}
+
 function formatMoney(value, symbol) {
   if (typeof value !== 'number') {
     return '-'
@@ -28,6 +35,14 @@ function formatNumber(value, digits = 0) {
   return value.toFixed(digits)
 }
 
+function getRiskLevelText(riskLevel) {
+  if (typeof riskLevel !== 'string' || riskLevel.trim() === '') {
+    return '风险未知'
+  }
+
+  return riskLevelTextMap[riskLevel] || riskLevel
+}
+
 function FavoriteProductItem({ product, removingProductId, onRemove }) {
   const [imageLoadError, setImageLoadError] = useState(false)
   const hasProductId = product?.id !== undefined && product?.id !== null && product?.id !== ''
@@ -37,6 +52,8 @@ function FavoriteProductItem({ product, removingProductId, onRemove }) {
     typeof product?.image === 'string' && product.image.trim() !== '' && !imageLoadError
       ? product.image
       : DEFAULT_PRODUCT_IMAGE
+  const riskLevel = product?.riskLevel || 'unknown'
+  const riskBadgeClassName = `favorite-card__risk-badge favorite-card__risk-badge--${riskLevel}`
 
   return (
     <article className="favorite-card">
@@ -55,7 +72,10 @@ function FavoriteProductItem({ product, removingProductId, onRemove }) {
 
         <div className="favorite-card__content">
           <div className="favorite-card__header">
-            <p className="favorite-card__category">{product?.category || '暂无'}</p>
+            <div className="favorite-card__tag-row">
+              <p className="favorite-card__category">{product?.category || '暂无'}</p>
+              <span className={riskBadgeClassName}>{getRiskLevelText(riskLevel)}</span>
+            </div>
             <h3 className="favorite-card__title">{productName}</h3>
           </div>
 
@@ -74,7 +94,7 @@ function FavoriteProductItem({ product, removingProductId, onRemove }) {
               </strong>
             </div>
 
-            <div className="favorite-card__metric">
+            <div className="favorite-card__metric favorite-card__metric--profit">
               <span className="favorite-card__metric-label">利润率</span>
               <strong className="favorite-card__metric-value">
                 {formatPercent(product?.profitRatePercent)}
@@ -88,10 +108,17 @@ function FavoriteProductItem({ product, removingProductId, onRemove }) {
               </strong>
             </div>
 
-            <div className="favorite-card__metric">
+            <div className="favorite-card__metric favorite-card__metric--competition">
               <span className="favorite-card__metric-label">竞争指数</span>
               <strong className="favorite-card__metric-value">
                 {formatNumber(product?.competitionScore)}
+              </strong>
+            </div>
+
+            <div className="favorite-card__metric favorite-card__metric--score">
+              <span className="favorite-card__metric-label">推荐评分</span>
+              <strong className="favorite-card__metric-value">
+                {formatNumber(product?.recommendationScore)}
               </strong>
             </div>
           </div>
@@ -177,11 +204,6 @@ function FavoritesPage() {
 
   return (
     <section className="page favorites-page">
-      <h2 className="page-title">候选池</h2>
-      <p className="page-description">
-        当前页面会请求 Node 后端的 <code>/api/favorites</code> 接口，展示已经加入候选池的手机支架商品。
-      </p>
-
       {loading ? <p className="page-note page-note--loading">候选池加载中...</p> : null}
 
       {!loading && error ? <p className="page-note page-note--error">请求失败：{error}</p> : null}
@@ -191,7 +213,7 @@ function FavoritesPage() {
       ) : null}
 
       {!loading && !error && !hasFavorites ? (
-        <p className="page-note page-note--empty">候选池暂无商品，请先从商品列表添加。</p>
+        <p className="page-note page-note--empty">候选池暂无商品，可先从商品列表选择高潜力款加入跟进。</p>
       ) : null}
 
       {!loading && !error && hasFavorites ? (

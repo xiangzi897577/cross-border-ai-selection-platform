@@ -50,7 +50,7 @@ function CategoryPieChart({ categoryDistribution }) {
       <div className="category-pie-chart__header">
         <h3 className="category-pie-chart__title">手机支架类型分布</h3>
         <p className="category-pie-chart__description">
-          根据后端 Dashboard 返回的 categoryDistribution 展示不同类型的商品数量占比。
+          展示不同手机支架类型在商品池中的占比，帮助观察类目覆盖是否均衡。
         </p>
       </div>
 

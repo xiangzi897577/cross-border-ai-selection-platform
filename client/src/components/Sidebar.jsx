@@ -11,10 +11,10 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
-        <p className="sidebar__eyebrow">Cross-border Commerce</p>
+        <p className="sidebar__eyebrow">Commerce Intelligence</p>
         <h1 className="sidebar__title">手机支架选品分析</h1>
         <p className="sidebar__description">
-          聚焦手机支架轻小件品类，模拟跨境电商卖家的利润测算、风险判断和候选池管理流程。
+          面向跨境轻小件选品场景，集中查看利润、竞争、风险和候选商品进展。
         </p>
       </div>
 

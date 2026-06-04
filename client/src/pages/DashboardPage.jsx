@@ -55,14 +55,6 @@ function DashboardPage() {
 
   return (
     <section className="page dashboard-page">
-      <div className="dashboard-page__header">
-        <h2 className="page-title">Dashboard 数据看板</h2>
-        <p className="page-description">
-          当前页面会请求 Node 后端的 <code>/api/dashboard</code>{' '}
-          接口，并展示核心指标、利润率排行图和类型分布图。
-        </p>
-      </div>
-
       {loading ? <p className="page-note page-note--loading">Dashboard 数据加载中...</p> : null}
 
       {!loading && error ? <p className="page-note page-note--error">请求失败：{error}</p> : null}
@@ -78,22 +70,48 @@ function DashboardPage() {
               title="总商品数"
               value={formatNumber(dashboard.totalProducts)}
               description="当前商品池中的候选商品数量"
+              tone="primary"
             />
             <StatCard
               title="平均利润率"
               value={formatPercent(averageProfitRatePercent)}
-              description="基于后端利润模型计算的平均利润率"
+              description="按售价、成本、物流和平台费用综合计算"
+              tone="profit"
             />
             <StatCard
               title="高潜力商品数"
               value={formatNumber(dashboard.highPotentialCount)}
               description="利润和竞争表现较好的候选商品"
+              tone="success"
             />
             <StatCard
               title="风险商品数"
               value={formatNumber(dashboard.riskProductCount)}
               description="风险等级较高或需要谨慎评估的商品"
+              tone="risk"
             />
+          </div>
+
+          <div className="dashboard-page__insights">
+            <div className="dashboard-page__insight dashboard-page__insight--opportunity">
+              <span className="dashboard-page__insight-label">低竞争高利润机会</span>
+              <strong className="dashboard-page__insight-value">
+                {formatNumber(dashboard.lowCompetitionHighProfitCount)}
+              </strong>
+              <p className="dashboard-page__insight-text">
+                可优先进入候选池，后续重点核对供应稳定性和评价结构。
+              </p>
+            </div>
+
+            <div className="dashboard-page__insight dashboard-page__insight--market">
+              <span className="dashboard-page__insight-label">平均竞争指数</span>
+              <strong className="dashboard-page__insight-value">
+                {formatNumber(dashboard.averageCompetitionScore)}
+              </strong>
+              <p className="dashboard-page__insight-text">
+                用于判断当前商品池整体竞争压力，数值越低越适合轻量试单。
+              </p>
+            </div>
           </div>
 
           <div className="dashboard-page__charts">

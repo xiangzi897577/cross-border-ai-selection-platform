@@ -66,28 +66,28 @@ function AnalysisProductCard({ product, cardType }) {
       </div>
 
       <div className="analysis-card__metrics">
-        <div className="analysis-card__metric">
+        <div className="analysis-card__metric analysis-card__metric--profit">
           <span className="analysis-card__metric-label">利润率</span>
           <strong className="analysis-card__metric-value">
             {formatPercent(product.profitRatePercent)}
           </strong>
         </div>
 
-        <div className="analysis-card__metric">
+        <div className="analysis-card__metric analysis-card__metric--competition">
           <span className="analysis-card__metric-label">竞争指数</span>
           <strong className="analysis-card__metric-value">
             {formatNumber(product.competitionScore)}
           </strong>
         </div>
 
-        <div className="analysis-card__metric">
+        <div className="analysis-card__metric analysis-card__metric--risk">
           <span className="analysis-card__metric-label">风险等级</span>
           <strong className="analysis-card__metric-value">
             {getRiskLevelLabel(product.riskLevel)}
           </strong>
         </div>
 
-        <div className="analysis-card__metric">
+        <div className="analysis-card__metric analysis-card__metric--score">
           <span className="analysis-card__metric-label">推荐评分</span>
           <strong className="analysis-card__metric-value">
             {formatNumber(product.recommendationScore)}
@@ -234,11 +234,6 @@ function AnalysisPage() {
 
   return (
     <section className="page analysis-page">
-      <h2 className="page-title">选品分析</h2>
-      <p className="page-description">
-        基于利润率、竞争指数、风险等级和推荐理由进行候选商品分析，帮助快速识别更值得跟进的手机支架商品。
-      </p>
-
       {loading ? <p className="page-note page-note--loading">选品分析数据加载中...</p> : null}
 
       {!loading && error ? <p className="page-note page-note--error">请求失败：{error}</p> : null}
@@ -250,26 +245,26 @@ function AnalysisPage() {
       {!loading && !error && hasProducts ? (
         <>
           <div className="analysis-page__summary">
-            <div className="analysis-page__summary-item">
+            <div className="analysis-page__summary-item analysis-page__summary-item--primary">
               <span className="analysis-page__summary-label">商品池数量</span>
               <strong className="analysis-page__summary-value">{products.length}</strong>
             </div>
 
-            <div className="analysis-page__summary-item">
+            <div className="analysis-page__summary-item analysis-page__summary-item--potential">
               <span className="analysis-page__summary-label">高潜力商品</span>
               <strong className="analysis-page__summary-value">
                 {analysisGroups.highPotentialProducts.length}
               </strong>
             </div>
 
-            <div className="analysis-page__summary-item">
+            <div className="analysis-page__summary-item analysis-page__summary-item--risk">
               <span className="analysis-page__summary-label">高风险商品</span>
               <strong className="analysis-page__summary-value">
                 {analysisGroups.highRiskProducts.length}
               </strong>
             </div>
 
-            <div className="analysis-page__summary-item">
+            <div className="analysis-page__summary-item analysis-page__summary-item--opportunity">
               <span className="analysis-page__summary-label">低竞争高利润</span>
               <strong className="analysis-page__summary-value">
                 {analysisGroups.lowCompetitionHighProfitProducts.length}
@@ -278,8 +273,7 @@ function AnalysisPage() {
           </div>
 
           <p className="page-note page-note--info">
-            当前规则：高潜力商品优先按推荐评分从高到低展示，推荐评分综合利润率、月销量、评分、竞争指数、物流成本和重量体积；高风险看风险等级和风险因素数量；低竞争高利润看竞争指数不高于
-            55 且利润率不低于 220%。
+            当前分析维度覆盖推荐评分、利润率、竞争指数和风险因素数量，适合用于初筛后进一步核价、看评价和确认供应稳定性。
           </p>
 
           <AnalysisSection

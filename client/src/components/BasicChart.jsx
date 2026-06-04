@@ -25,8 +25,8 @@ function BasicChart() {
     <section className="basic-chart">
       <div className="basic-chart__card">
         <div className="basic-chart__header">
-          <h3 className="basic-chart__title">手机支架类型测试柱状图</h3>
-          <p className="basic-chart__description">使用固定测试数据，先验证 Recharts 基础渲染。</p>
+          <h3 className="basic-chart__title">手机支架类型柱状图</h3>
+          <p className="basic-chart__description">按类目观察商品数量分布，辅助判断商品池结构。</p>
         </div>
 
         <div className="basic-chart__chart-area">
@@ -36,7 +36,7 @@ function BasicChart() {
               <XAxis dataKey="name" tick={{ fill: '#475569', fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fill: '#475569', fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="value" name="测试数量" fill="#14b8a6" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="value" name="商品数量" fill="#14b8a6" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -44,8 +44,8 @@ function BasicChart() {
 
       <div className="basic-chart__card">
         <div className="basic-chart__header">
-          <h3 className="basic-chart__title">手机支架类型测试饼图</h3>
-          <p className="basic-chart__description">同一组数据换成 PieChart，观察图表组件写法差异。</p>
+          <h3 className="basic-chart__title">手机支架类型占比</h3>
+          <p className="basic-chart__description">查看不同类型手机支架的占比情况，辅助后续补充商品方向。</p>
         </div>
 
         <div className="basic-chart__chart-area">

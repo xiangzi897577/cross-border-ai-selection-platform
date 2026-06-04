@@ -4,6 +4,13 @@ import { addFavorite } from '../services/api'
 
 const DEFAULT_PRODUCT_IMAGE = '/images/products/placeholder.png'
 
+const riskLevelTextMap = {
+  low: '低风险',
+  medium: '中风险',
+  high: '高风险',
+  unknown: '风险未知',
+}
+
 function formatMoney(value, symbol) {
   if (typeof value !== 'number') {
     return '-'
@@ -28,6 +35,14 @@ function formatNumber(value, digits = 0) {
   return value.toFixed(digits)
 }
 
+function getRiskLevelText(riskLevel) {
+  if (typeof riskLevel !== 'string' || riskLevel.trim() === '') {
+    return '风险未知'
+  }
+
+  return riskLevelTextMap[riskLevel] || riskLevel
+}
+
 function ProductCard({ product }) {
   const [imageLoadError, setImageLoadError] = useState(false)
   const [favoriteLoading, setFavoriteLoading] = useState(false)
@@ -39,6 +54,8 @@ function ProductCard({ product }) {
       ? product.image
       : DEFAULT_PRODUCT_IMAGE
   const productName = product?.productName || '暂无'
+  const riskLevel = product?.riskLevel || 'unknown'
+  const riskBadgeClassName = `product-card__risk-badge product-card__risk-badge--${riskLevel}`
 
   async function handleAddFavorite() {
     if (!hasProductId || favoriteLoading) {
@@ -74,7 +91,10 @@ function ProductCard({ product }) {
 
       <div className="product-card__body">
         <div>
-          <p className="product-card__category">{product?.category || '暂无'}</p>
+          <div className="product-card__tag-row">
+            <p className="product-card__category">{product?.category || '暂无'}</p>
+            <span className={riskBadgeClassName}>{getRiskLevelText(riskLevel)}</span>
+          </div>
           <h3 className="product-card__title">{productName}</h3>
         </div>
 
@@ -93,14 +113,14 @@ function ProductCard({ product }) {
             </strong>
           </div>
 
-          <div className="product-card__metric">
+          <div className="product-card__metric product-card__metric--profit">
             <span className="product-card__metric-label">利润率</span>
             <strong className="product-card__metric-value">
               {formatPercent(product?.profitRatePercent)}
             </strong>
           </div>
 
-          <div className="product-card__metric">
+          <div className="product-card__metric product-card__metric--competition">
             <span className="product-card__metric-label">竞争指数</span>
             <strong className="product-card__metric-value">
               {formatNumber(product?.competitionScore)}
@@ -113,11 +133,18 @@ function ProductCard({ product }) {
               {formatNumber(product?.rating, 1)}
             </strong>
           </div>
+
+          <div className="product-card__metric product-card__metric--score">
+            <span className="product-card__metric-label">推荐评分</span>
+            <strong className="product-card__metric-value">
+              {formatNumber(product?.recommendationScore)}
+            </strong>
+          </div>
         </div>
 
         <div className="product-card__footer">
           <span className="product-card__detail-hint">
-            {hasProductId ? `点击查看商品 #${product.id}` : '缺少商品 id，暂时无法跳转'}
+            {hasProductId ? `查看商品 #${product.id} 详情` : '缺少商品 id，暂时无法跳转'}
           </span>
         </div>
       </div>

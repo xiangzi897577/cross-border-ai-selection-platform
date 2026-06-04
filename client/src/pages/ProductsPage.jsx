@@ -96,13 +96,7 @@ function ProductsPage() {
   const currentSortLabel = SORT_LABELS[filters.sort] || '默认排序'
 
   return (
-    <section className="page">
-      <h2 className="page-title">商品列表</h2>
-      <p className="page-description">
-        当前页面会把关键词、类目、利润率和排序条件传给 Node 后端的 <code>/api/products</code>{' '}
-        接口，由后端完成组合筛选和排序后再返回结果。
-      </p>
-
+    <section className="page products-page">
       <ProductFilters
         filters={filters}
         onFiltersChange={setFilters}
@@ -125,7 +119,7 @@ function ProductsPage() {
           ，排序 <strong>{currentSortLabel}</strong>
         </p>
       ) : (
-        <p className="page-note page-note--info">当前显示全部商品。</p>
+        <p className="page-note page-note--info">当前展示完整商品池，可通过上方条件进一步筛选。</p>
       )}
 
       {loading ? <p className="page-note page-note--loading">商品列表加载中...</p> : null}

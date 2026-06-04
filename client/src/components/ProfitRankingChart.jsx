@@ -67,7 +67,7 @@ function ProfitRankingChart({ products, topProfitProducts }) {
       <div className="profit-ranking-chart__header">
         <h3 className="profit-ranking-chart__title">利润率排行</h3>
         <p className="profit-ranking-chart__description">
-          根据后端 Dashboard 返回的 topProfitProducts 展示利润率最高的手机支架商品。
+          对比当前商品池中利润率最高的候选款，辅助判断优先跟进顺序。
         </p>
       </div>
 
