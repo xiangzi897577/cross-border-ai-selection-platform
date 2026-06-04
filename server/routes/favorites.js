@@ -1,15 +1,22 @@
 import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { readJsonFile, writeJsonFile } from '../utils/fileStore.js'
+import { supabase } from '../lib/supabase.js'
+import { readJsonFile } from '../utils/fileStore.js'
 import { enrichProductMetrics } from '../utils/productMetrics.js'
 
 const router = express.Router()
 
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirPath = path.dirname(currentFilePath)
-const favoritesFilePath = path.join(currentDirPath, '..', 'data', 'favorites.json')
 const productsFilePath = path.join(currentDirPath, '..', 'data', 'products.json')
+
+function getClientId(req) {
+  const rawClientId = req.headers['x-client-id']
+  const clientId = Array.isArray(rawClientId) ? rawClientId[0] : rawClientId
+
+  return typeof clientId === 'string' ? clientId.trim() : ''
+}
 
 function parseProductId(productId) {
   if (productId === undefined || productId === null || productId === '') {
@@ -25,22 +32,43 @@ function parseProductId(productId) {
   return numberValue
 }
 
+async function readProducts() {
+  const products = await readJsonFile(productsFilePath)
+
+  if (!Array.isArray(products)) {
+    throw new Error('Products data format is invalid. Expected an array.')
+  }
+
+  return products
+}
+
+function isUniqueConstraintError(error) {
+  return error?.code === '23505'
+}
+
 router.get('/', async (req, res) => {
   try {
-    const favoriteIds = await readJsonFile(favoritesFilePath)
-    const products = await readJsonFile(productsFilePath)
+    const clientId = getClientId(req)
 
-    if (!Array.isArray(favoriteIds)) {
-      return res.status(500).json({
+    if (!clientId) {
+      return res.status(400).json({
         status: 'error',
-        message: 'Favorites data format is invalid. Expected an array of product ids.',
+        message: 'Missing client id',
       })
     }
 
-    if (!Array.isArray(products)) {
+    const products = await readProducts()
+    const { data: favorites, error } = await supabase
+      .from('favorites')
+      .select('product_id, created_at')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
       return res.status(500).json({
         status: 'error',
-        message: 'Products data format is invalid. Expected an array.',
+        message: 'Failed to query favorites from Supabase.',
+        error: error.message,
       })
     }
 
@@ -50,9 +78,9 @@ router.get('/', async (req, res) => {
     // 2 → { id: 2, productName: 'B 商品' }  
     const productMap = new Map(products.map((product) => [product.id, product]))
 
-    const favoriteProducts = favoriteIds
+    const favoriteProducts = favorites
       // Get the product for each favorite ID 
-      .map((favoriteId) => productMap.get(favoriteId))
+      .map((favorite) => productMap.get(favorite.product_id))
       .filter(Boolean)
       .map((product) => enrichProductMetrics(product))
 
@@ -68,7 +96,15 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    const clientId = getClientId(req)
     const productId = parseProductId(req.body?.productId)
+
+    if (!clientId) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Missing client id',
+      })
+    }
 
     if (productId === null) {
       return res.status(400).json({
@@ -77,15 +113,7 @@ router.post('/', async (req, res) => {
       })
     }
 
-    const products = await readJsonFile(productsFilePath)
-
-    if (!Array.isArray(products)) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Products data format is invalid. Expected an array.',
-      })
-    }
-
+    const products = await readProducts()
     const targetProduct = products.find((product) => product.id === productId)
 
     if (!targetProduct) {
@@ -95,25 +123,28 @@ router.post('/', async (req, res) => {
       })
     }
 
-    const favoriteIds = await readJsonFile(favoritesFilePath)
-
-    if (!Array.isArray(favoriteIds)) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Favorites data format is invalid. Expected an array of product ids.',
+    const { error } = await supabase
+      .from('favorites')
+      .insert({
+        client_id: clientId,
+        product_id: productId,
       })
-    }
 
-    if (favoriteIds.includes(productId)) {
+    if (isUniqueConstraintError(error)) {
       return res.status(409).json({
         status: 'error',
-        message: '该商品已在候选池中。',
+        message: 'Product already in favorites',
         product: enrichProductMetrics(targetProduct),
       })
     }
 
-    const nextFavoriteIds = [...favoriteIds, productId]
-    await writeJsonFile(favoritesFilePath, nextFavoriteIds)
+    if (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Failed to add favorite product in Supabase.',
+        error: error.message,
+      })
+    }
 
     return res.status(201).json({
       status: 'success',
@@ -131,7 +162,15 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
+    const clientId = getClientId(req)
     const productId = parseProductId(req.params.id)
+
+    if (!clientId) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Missing client id',
+      })
+    }
 
     if (productId === null) {
       return res.status(400).json({
@@ -140,24 +179,27 @@ router.delete('/:id', async (req, res) => {
       })
     }
 
-    const favoriteIds = await readJsonFile(favoritesFilePath)
+    const { data: deletedFavorites, error } = await supabase
+      .from('favorites')
+      .delete()
+      .eq('client_id', clientId)
+      .eq('product_id', productId)
+      .select('product_id')
 
-    if (!Array.isArray(favoriteIds)) {
+    if (error) {
       return res.status(500).json({
         status: 'error',
-        message: 'Favorites data format is invalid. Expected an array of product ids.',
+        message: 'Failed to delete favorite product from Supabase.',
+        error: error.message,
       })
     }
 
-    if (!favoriteIds.includes(productId)) {
+    if (!Array.isArray(deletedFavorites) || deletedFavorites.length === 0) {
       return res.status(404).json({
         status: 'error',
         message: '该商品不在候选池中，无法删除。',
       })
     }
-
-    const nextFavoriteIds = favoriteIds.filter((favoriteId) => favoriteId !== productId)
-    await writeJsonFile(favoritesFilePath, nextFavoriteIds)
 
     return res.json({
       status: 'success',

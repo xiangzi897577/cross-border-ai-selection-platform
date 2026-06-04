@@ -1,5 +1,47 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 const BACKEND_CONNECTION_ERROR = `无法连接到后端服务，请确认 ${API_BASE_URL} 已启动或配置正确`
+const CLIENT_ID_STORAGE_KEY = 'phone_holder_analyzer_client_id'
+
+let memoryClientId = ''
+
+function createClientId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  return `client_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+}
+
+function getClientId() {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    if (!memoryClientId) {
+      memoryClientId = createClientId()
+    }
+
+    return memoryClientId
+  }
+
+  const storedClientId = window.localStorage.getItem(CLIENT_ID_STORAGE_KEY)
+
+  if (storedClientId) {
+    return storedClientId
+  }
+
+  const nextClientId = createClientId()
+  window.localStorage.setItem(CLIENT_ID_STORAGE_KEY, nextClientId)
+
+  return nextClientId
+}
+
+function withClientIdHeader(options = {}) {
+  const headers = new Headers(options.headers || {})
+  headers.set('x-client-id', getClientId())
+
+  return {
+    ...options,
+    headers,
+  }
+}
 
 function getRequestErrorMessage(status, errorMessages, data) {
   if (errorMessages && typeof errorMessages[status] === 'string') {
@@ -142,10 +184,11 @@ export async function addFavorite(productId, options = {}) {
     {
       ...options,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-      },
+      headers: (() => {
+        const headers = new Headers(withClientIdHeader(options).headers)
+        headers.set('Content-Type', 'application/json')
+        return headers
+      })(),
       body: JSON.stringify({ productId }),
     },
   )
@@ -161,7 +204,7 @@ export async function getFavorites(options = {}) {
   const favorites = await requestJson(
     '/api/favorites',
     { default: '获取候选池商品失败' },
-    options,
+    withClientIdHeader(options),
   )
 
   if (!Array.isArray(favorites)) {
@@ -180,7 +223,7 @@ export async function removeFavorite(productId, options = {}) {
       default: '取消收藏失败',
     },
     {
-      ...options,
+      ...withClientIdHeader(options),
       method: 'DELETE',
     },
   )
