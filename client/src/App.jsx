@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import './App.css'
 import Layout from './components/Layout.jsx'
 import AnalysisPage from './pages/AnalysisPage.jsx'
@@ -18,6 +19,7 @@ function App() {
         <Route path="/analysis" element={<AnalysisPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
       </Routes>
+      <Analytics />
     </Layout>
   )
 }
