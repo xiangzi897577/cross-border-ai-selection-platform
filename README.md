@@ -40,14 +40,15 @@
 * Express
 * Vercel Serverless Functions
 * Supabase PostgreSQL
-* JSON 文件模拟商品数据
+* JSON 文件备份商品数据
 
 ### 当前数据来源
 
-* `server/data/products.json`
+* `Supabase PostgreSQL products` 表
 * `Supabase PostgreSQL favorites` 表
+* `server/data/products.json` 作为商品数据备份
 
-当前版本中，商品数据仍然来自 `server/data/products.json`，候选池收藏数据已经迁移到 Supabase PostgreSQL。前端通过浏览器本地生成的匿名 `client_id` 区分不同访问者，后端通过请求头 `x-client-id` 读写对应收藏记录。
+当前版本中，商品数据已经迁移到 Supabase PostgreSQL `products` 表，后端接口统一读取 Supabase 并返回原有 camelCase 数据结构。`server/data/products.json` 暂时保留为备份数据源。候选池收藏数据继续存储在 Supabase PostgreSQL `favorites` 表中。前端通过浏览器本地生成的匿名 `client_id` 区分不同访问者，后端通过请求头 `x-client-id` 读写对应收藏记录。
 
 ### 后续可扩展方向
 

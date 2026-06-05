@@ -2492,3 +2492,80 @@ const currentFilePath = fileURLToPath(import.meta.url)
 
 ### 是否更新 DAILY_LOG.md
 - 是，已更新 Day 37 记录。
+
+## Day 38 - 2026-06-05：products.json 迁移到 Supabase
+
+### 今日目标
+- 将 `server/data/products.json` 中的商品数据迁移到 Supabase `products` 表。
+- 后端商品、Dashboard 和候选池接口优先读取 Supabase products。
+- 保持前端接口路径和返回结构不变，继续保留 `products.json` 作为备份。
+
+### 今日完成内容
+- 在 Supabase 创建 `public.products` 表，字段以当前 `products.json` 真实字段为准，数据库使用 snake_case。
+- 开启 `products` 表 RLS，并只授予后端使用的 `service_role` 访问权限。
+- 新增商品字段映射工具，把 Supabase snake_case 行数据转换回前端当前使用的 camelCase 商品对象。
+- 新增一次性导入脚本，支持从 `products.json` upsert 到 Supabase，重复执行不会重复插入。
+- 修改后端商品读取层，`readProducts()` 和 `readProductById()` 优先读取 Supabase。
+- 修改商品详情和收藏添加逻辑，按 Supabase products 校验商品是否存在。
+- 调整本地 `.env` 加载为静默模式，避免导入脚本输出额外环境变量加载提示。
+- `favorites` 表、`x-client-id` 请求头、接口路径和前端调用方式保持不变。
+
+### 修改了哪些文件
+- `server/utils/productMapper.js`
+- `server/scripts/importProductsToSupabase.js`
+- `server/utils/productStore.js`
+- `server/routes/products.js`
+- `server/routes/favorites.js`
+- `server/config/env.js`
+- `server/package.json`
+- `README.md`
+- `docs/DAILY_LOG.md`
+
+### Supabase products 表字段
+- 核心字段：`id`、`product_name`、`category`、`amazon_price`、`cost_1688`、`shipping_cost`、`platform_fee_rate`
+- 市场字段：`estimated_monthly_sales`、`rating`、`review_count`、`competition_score`
+- 商品属性：`weight`、`volume_level`、`material`、`supplier`、`image`、`image_source`、`source_image_url`
+- 分析字段：`tags jsonb`、`risk_factors jsonb`、`recommendation_reason`
+- 时间字段：`created_at`、`updated_at`
+
+### 数据导入结果
+- `products.json` 商品数量：20
+- Supabase `products` 成功写入数量：20
+- 失败数量：0
+- `tags` 数组数量：20
+- `risk_factors` 数组数量：20
+- 商品 id 范围：1 到 20
+
+### 接口验证结果
+- `GET /api/products`：200，返回 20 条。
+- `GET /api/products?keyword=车载`：200，返回 5 条。
+- `GET /api/products?category=车载支架`：200，返回 4 条。
+- `GET /api/products?minProfitRate=30`：200，返回 20 条。
+- `GET /api/products?sort=profitRateDesc`：200，返回 20 条。
+- `GET /api/products/1`：200，返回 camelCase 商品详情。
+- `GET /api/dashboard`：200，Dashboard 统计正常。
+- `GET /api/favorites`：200，临时 client 初始返回空数组。
+- `POST /api/favorites`：201，临时 client 成功收藏商品 20。
+- `DELETE /api/favorites/20`：200，临时 client 成功取消收藏。
+
+### 验证命令
+- `cd server && npm run import:products`
+- 对新增和修改的后端文件执行 `node --check`，结果通过。
+- 使用临时 Express 端口验证产品、Dashboard 和收藏接口，结果通过。
+- `cd client && npm run build`，结果通过。
+
+### 保持不变的内容
+- 没有删除 `server/data/products.json`。
+- 没有改前端页面主逻辑。
+- 没有改变 `/api/products`、`/api/products/:id`、`/api/dashboard`、`/api/favorites` 等接口路径。
+- 没有改变 `favorites` 表名、字段名或 `x-client-id` 请求头。
+- 没有接入 AI、真实 1688 API 或 Amazon API。
+
+### 今日重点理解知识点
+- 数据库存 snake_case，后端返回 camelCase，可以兼顾数据库规范和前端兼容。
+- `upsert(..., { onConflict: 'id' })` 适合一次性迁移脚本重复执行。
+- `products.json` 作为备份保留，真正回滚时只需要把 `productStore.js` 切回 JSON 读取。
+- Supabase public schema 表需要关注 RLS 和显式 grant，后端 service role 不能暴露给前端。
+
+### 是否更新 DAILY_LOG.md
+- 是，已更新 Day 38 记录。

@@ -2,7 +2,7 @@ import express from 'express'
 import { filterProductsByCategory, filterProductsByKeyword, filterProductsByMinProfitRate } from '../utils/productFilters.js'
 import { enrichProductMetrics } from '../utils/productMetrics.js'
 import { sortProducts } from '../utils/productSort.js'
-import { readProducts } from '../utils/productStore.js'
+import { readProductById, readProducts } from '../utils/productStore.js'
 import { sendError, sendSuccess } from '../utils/response.js'
 import { parsePositiveInteger } from '../utils/number.js'
 
@@ -34,8 +34,7 @@ router.get('/:id', async (req, res) => {
   }
 
   try {
-    const products = await readProducts()
-    const product = products.find((item) => item.id === productId)
+    const product = await readProductById(productId)
 
     if (!product) {
       return sendError(res, 404, 'Product not found.')

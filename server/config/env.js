@@ -6,4 +6,4 @@ const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirPath = path.dirname(currentFilePath)
 const serverEnvPath = path.join(currentDirPath, '..', '.env')
 
-dotenv.config({ path: serverEnvPath })
+dotenv.config({ path: serverEnvPath, quiet: true })

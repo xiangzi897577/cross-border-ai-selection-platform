@@ -2,7 +2,7 @@ import express from 'express'
 import { supabase } from '../lib/supabase.js'
 import { parsePositiveInteger } from '../utils/number.js'
 import { enrichProductMetrics } from '../utils/productMetrics.js'
-import { readProducts } from '../utils/productStore.js'
+import { readProductById, readProducts } from '../utils/productStore.js'
 import { sendError, sendSuccess } from '../utils/response.js'
 
 const router = express.Router()
@@ -72,8 +72,7 @@ router.post('/', async (req, res) => {
       )
     }
 
-    const products = await readProducts()
-    const targetProduct = products.find((product) => product.id === productId)
+    const targetProduct = await readProductById(productId)
 
     if (!targetProduct) {
       return sendError(res, 404, 'Product not found. Cannot add it to favorites.')

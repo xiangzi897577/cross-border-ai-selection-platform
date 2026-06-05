@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "import:products": "node scripts/importProductsToSupabase.js",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
