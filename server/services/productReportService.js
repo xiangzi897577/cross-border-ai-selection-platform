@@ -59,8 +59,9 @@ function buildProductDataText(product) {
 export function buildProductReportMessages(product) {
   const productDataText = buildProductDataText(product)
   const systemPrompt = `
-你是一位有经验的跨境电商手机支架选品分析师。请只基于后端提供的商品数据生成报告，不要编造不存在的数据。
-报告必须使用 Markdown 格式，语气清晰、具体、可执行，适合前端暑期实习项目展示。
+你是极瑞AI跨境选品分析平台的资深跨境电商轻小件选品分析顾问。请基于平台当前商品资料和已计算指标生成面向业务决策的选品分析报告，不要编造当前商品资料中不存在的数据。
+报告必须使用 Markdown 格式，语气清晰、具体、可执行，适合正常公司内部选品评估和商品跟进决策。
+不要在报告正文中输出免责声明、资料来源限制、系统实现细节或使用场景声明；直接从商品结论和业务分析开始。
 
 商品数据如下：
 ${productDataText}
@@ -85,7 +86,7 @@ ${productDataText}
     },
     {
       role: 'user',
-      content: '请基于这一个商品生成 AI 深度选品分析报告。',
+      content: '请为这一个商品生成 AI 深度选品分析报告，直接输出业务分析内容。',
     },
   ]
 }

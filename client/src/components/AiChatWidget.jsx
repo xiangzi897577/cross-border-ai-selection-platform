@@ -144,7 +144,7 @@ function AiChatWidget() {
             {messages.length === 0 ? (
               <div className="ai-chat-widget__empty">
                 <strong>可以咨询选品判断、利润机会和风险排查。</strong>
-                <span>例如：哪些手机支架更适合优先加入候选池？</span>
+                <span>例如：哪些轻小件商品更适合优先加入候选池？</span>
               </div>
             ) : null}
 

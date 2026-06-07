@@ -35,8 +35,8 @@ function getHeaderConfig(pathname) {
   return (
     headerConfig[pathname] || {
       eyebrow: '当前项目',
-      title: '跨境电商手机支架选品分析平台',
-      description: '围绕利润、竞争、风险和推荐评分，辅助筛选更值得跟进的手机支架候选商品。',
+      title: '极瑞AI跨境选品分析平台',
+      description: '围绕利润、竞争、风险和推荐评分，辅助筛选更值得跟进的轻小件候选商品。',
     }
   )
 }
