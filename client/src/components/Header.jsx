@@ -9,7 +9,7 @@ const headerConfig = {
   '/products': {
     eyebrow: 'Products',
     title: '商品列表',
-    description: '按关键词、类目、利润率和排序维度筛选手机支架候选商品，优先锁定值得跟进的款式。',
+    description: '按关键词、类目、利润率和排序维度筛选轻小件候选商品，优先锁定值得跟进的款式。',
   },
   '/analysis': {
     eyebrow: 'Analysis',

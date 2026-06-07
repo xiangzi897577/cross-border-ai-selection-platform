@@ -13,7 +13,7 @@ app.use(express.json())
 app.get('/', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'Cross-border phone holder analyzer backend is running',
+    message: 'cross-border-ai-selection-api backend is running',
     availableRoutes: [
       'GET /api/health',
       'GET /api/products',
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'Cross-border phone holder analyzer API is running,  gogogo!',
+    message: 'Cross-border AI selection API is running,  gogogo!',
   })
 })
 

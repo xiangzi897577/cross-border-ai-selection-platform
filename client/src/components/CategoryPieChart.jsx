@@ -49,14 +49,14 @@ function CategoryPieChart({ categoryDistribution }) {
   return (
     <section className="category-pie-chart">
       <div className="category-pie-chart__header">
-        <h3 className="category-pie-chart__title">手机支架类型分布</h3>
+        <h3 className="category-pie-chart__title">商品品类分布</h3>
         <p className="category-pie-chart__description">
-          展示不同手机支架类型在商品池中的占比，帮助观察类目覆盖是否均衡。
+          展示不同轻小件品类在商品池中的占比，帮助观察商品类目覆盖是否均衡。
         </p>
       </div>
 
       {chartData.length === 0 ? (
-        <p className="category-pie-chart__empty">暂无手机支架类型分布数据。</p>
+        <p className="category-pie-chart__empty">暂无商品品类分布数据。</p>
       ) : (
         <div className="category-pie-chart__chart-area">
           <ResponsiveContainer width="100%" height="100%">

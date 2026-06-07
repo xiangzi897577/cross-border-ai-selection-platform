@@ -128,7 +128,7 @@ function DashboardPage() {
             <div>
               <p className="dashboard-page__eyebrow">AI Selection Dashboard</p>
               <h2 className="dashboard-page__hero-title">
-                跨境电商手机支架选品决策看板
+                跨境电商轻小件选品决策看板
               </h2>
               <p className="dashboard-page__hero-description">
                 基于利润、竞争、风险和 AI 报告能力，帮助快速识别值得跟进的候选商品。

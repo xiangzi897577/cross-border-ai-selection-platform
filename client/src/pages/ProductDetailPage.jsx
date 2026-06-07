@@ -202,7 +202,7 @@ function ProductDetailPage() {
               <p className="detail-page__category">{getProductCategory(product)}</p>
               <h3 className="detail-page__product-name">{getProductName(product)}</h3>
               <p className="detail-page__summary-text">
-                商品编号 <strong>{currentProductId}</strong>。结合售价、成本、物流、竞争和风险标签，判断该款是否适合进入后续选品跟进。
+                结合售价、成本、物流、竞争和风险标签，判断该款是否适合进入后续选品跟进。
               </p>
 
               <div className="detail-page__decision-grid">
