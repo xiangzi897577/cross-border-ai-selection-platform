@@ -6,7 +6,7 @@ import LoadingState from '../components/common/LoadingState.jsx'
 import ProfitRankingChart from '../components/ProfitRankingChart.jsx'
 import RecommendationCompetitionChart from '../components/RecommendationCompetitionChart.jsx'
 import StatCard from '../components/StatCard.jsx'
-import { getCachedDashboard, getCachedProducts, getDashboard, getProducts } from '../services/api'
+import { getCachedDashboard, getCachedProducts, getDashboard, getProducts } from '../services'
 import { formatNumber, formatPercent } from '../utils/format'
 
 function buildDashboardConclusions(dashboard) {

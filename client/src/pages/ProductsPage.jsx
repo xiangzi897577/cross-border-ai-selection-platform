@@ -5,7 +5,7 @@ import LoadingState from '../components/common/LoadingState.jsx'
 import ProductGrid from '../components/ProductGrid.jsx'
 import ProductFilters from '../components/ProductFilters.jsx'
 import ProductStrategyFilter from '../components/ProductStrategyFilter.jsx'
-import { getCachedProducts, getProducts } from '../services/api'
+import { getCachedProducts, getProducts } from '../services'
 import { filterAndSortProducts } from '../utils/productListFilters'
 import { filterProductsByStrategy, getProductStrategy } from '../utils/productStrategies'
 

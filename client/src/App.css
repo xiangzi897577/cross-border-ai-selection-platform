@@ -176,10 +176,12 @@
 
 .dashboard-layout__main {
   flex: 1;
+  min-width: 0;
 }
 
 .dashboard-layout__page {
   min-height: calc(100vh - 72px - 92px);
+  min-width: 0;
   padding: 28px;
 }
 
@@ -1155,12 +1157,14 @@
 .detail-page__item {
   display: flex;
   min-width: 0;
+  max-width: 100%;
   flex-direction: column;
   gap: 6px;
   padding: 12px;
   border: 1px solid rgba(219, 229, 239, 0.62);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-soft);
+  overflow-wrap: anywhere;
 }
 
 .product-card__metric--profit,
@@ -1478,6 +1482,8 @@
 
 .detail-page {
   gap: 20px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .detail-page__error {
@@ -1642,10 +1648,15 @@
 
 .detail-page__sections {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .detail-page__section {
+  min-width: 0;
+  max-width: 100%;
   padding: 22px;
 }
 
@@ -1664,12 +1675,17 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
   margin: 0;
 }
 
 .detail-page__label,
 .detail-page__value {
+  min-width: 0;
+  max-width: 100%;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .detail-page__value {
@@ -1701,6 +1717,8 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .product-report__title {
@@ -1738,12 +1756,15 @@
 }
 
 .product-report__content {
+  min-width: 0;
+  max-width: 100%;
   padding: 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-soft);
   color: var(--color-text-soft);
   line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .product-report__content h2,
@@ -2248,6 +2269,7 @@
 
 .ai-chat-widget__markdown-table-wrapper {
   max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   margin: 10px 0;
   border: 1px solid var(--color-border);

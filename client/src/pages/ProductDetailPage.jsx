@@ -8,7 +8,7 @@ import {
   generateAiProductReport,
   getCachedProductById,
   getProductById,
-} from '../services/api'
+} from '../services'
 import {
   formatMoney,
   formatNumber,
@@ -164,7 +164,6 @@ function ProductDetailPage() {
   const productImage = getProductImage(product, imageLoadError)
   const tags = getProductTags(product)
   const riskFactors = getRiskFactors(product)
-  const currentProductId = product?.id ?? id
   const basicReport = useMemo(() => (product ? buildBasicProductReport(product) : ''), [product])
   const reportContent = aiReport || basicReport
   const reportSource = getReportSourceLabel(aiReport ? 'ai' : 'basic')

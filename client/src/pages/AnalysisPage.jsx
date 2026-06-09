@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import EmptyState from '../components/common/EmptyState.jsx'
 import ErrorState from '../components/common/ErrorState.jsx'
 import LoadingState from '../components/common/LoadingState.jsx'
-import { getCachedProducts, getProducts } from '../services/api'
+import { getCachedProducts, getProducts } from '../services'
 import { formatPercent, formatScore } from '../utils/format'
 import { safeNumber } from '../utils/number'
 import {

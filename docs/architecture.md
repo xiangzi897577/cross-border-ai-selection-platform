@@ -2,7 +2,7 @@
 
 ## 高层架构
 
-本文档说明极瑞AI跨境选品分析平台的高层技术架构。项目采用前后端分离结构：
+本文档说明AI跨境选品分析平台的高层技术架构。项目采用前后端分离结构：
 
 ```text
 React + Vite Client
@@ -16,7 +16,7 @@ Express API on Vercel Serverless
   |-- AI Provider API
 ```
 
-前端负责页面展示、用户交互、缓存读取和接口调用；后端负责商品数据读取、业务指标计算、候选池持久化和 AI 服务封装。
+前端负责页面展示、用户交互、缓存读取和接口调用；后端负责商品数据读取、业务指标计算、候选池持久化和 AI 服务封装。前端接口调用已从页面组件中的分散请求逻辑收敛到 Axios 统一请求层，页面只依赖业务 API 函数。
 
 ## 前端
 
@@ -29,6 +29,7 @@ Express API on Vercel Serverless
 - Recharts
 - react-markdown
 - remark-gfm
+- axios
 
 主要页面包括：
 
@@ -38,13 +39,20 @@ Express API on Vercel Serverless
 - Analysis：选品分析和分组观察。
 - Favorites：候选池管理。
 
-前端 API 封装集中在 `client/src/services/api.js`，负责：
+前端 API 封装位于 `client/src/services/`，采用 axios 统一请求实例和按业务拆分的 API 模块：
 
-- 统一拼接后端 API 地址。
-- 生成和读取匿名 `client_id`。
-- 为候选池相关请求附加 `x-client-id`。
-- 处理请求错误和响应格式校验。
-- 写入和读取本地缓存。
+```text
+client/src/services/
+├── http.js          # Axios 实例、baseURL、timeout、响应拦截器、错误归一化、client_id 请求头
+├── productApi.js    # 商品列表、商品详情、查询参数组装和商品缓存
+├── dashboardApi.js  # Dashboard 数据读取和缓存
+├── favoriteApi.js   # 候选池读取、新增、删除、缓存更新和 x-client-id 请求头
+├── aiApi.js         # AI 对话、AI 商品报告、消息裁剪、超时和错误兜底
+├── index.js         # 统一导出业务 API
+└── api.js           # 兼容旧导入路径的 re-export
+```
+
+页面组件应优先从 `client/src/services` 导入业务 API，不直接管理 Axios 实例，也不直接拼接跨模块请求细节。
 
 ## 后端
 
@@ -58,15 +66,17 @@ Express API on Vercel Serverless
 
 主要接口包括：
 
-- `GET /api/health`
-- `GET /api/products`
-- `GET /api/products/:id`
-- `GET /api/dashboard`
-- `GET /api/favorites`
-- `POST /api/favorites`
-- `DELETE /api/favorites/:id`
-- `POST /api/ai/chat`
-- `POST /api/ai/product-report`
+| 方法 | 路径 | 用途 |
+| --- | --- | --- |
+| `GET` | `/api/health` | 后端健康检查 |
+| `GET` | `/api/products` | 商品列表，支持搜索、筛选和排序 |
+| `GET` | `/api/products/:id` | 商品详情 |
+| `GET` | `/api/dashboard` | Dashboard 统计数据 |
+| `GET` | `/api/favorites` | 当前匿名访问者候选池 |
+| `POST` | `/api/favorites` | 添加商品到候选池 |
+| `DELETE` | `/api/favorites/:id` | 从候选池移除商品 |
+| `POST` | `/api/ai/chat` | AI 选品助手对话 |
+| `POST` | `/api/ai/product-report` | 生成单商品 AI 分析报告 |
 
 后端入口通过 Express 注册路由，并导出 app 供本地启动和 Serverless 部署复用。
 
@@ -74,9 +84,9 @@ Express API on Vercel Serverless
 
 当前数据层由 Supabase PostgreSQL 和 JSON 备份数据组成：
 
-- `products` 表：商品主数据。
+- `products` 表：线上接口使用的商品主数据。
 - `favorites` 表：候选池收藏数据。
-- `server/data/products.json`：商品备份数据。
+- `server/data/products.json`：种子数据、备份数据和本地导入来源。
 
 后端读取商品数据后，会补充利润、风险、竞争等级、推荐评分等计算字段，使前端页面可以复用统一的数据结构。当前手机支架数据是种子品类，数据模型和分析流程面向跨境轻小件候选商品扩展。
 
@@ -141,3 +151,4 @@ AI Provider
 - 设计数据导入、刷新、去重和质量校验流程。
 - 对 AI 上下文进行更稳定的数据裁剪和指标解释。
 - 增加监控、错误兜底和部署回归检查。
+- 增加登录认证、用户体系和权限管理，从匿名候选池逐步扩展为用户级候选池与分析记录。

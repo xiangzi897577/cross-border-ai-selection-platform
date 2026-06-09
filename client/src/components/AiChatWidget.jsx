@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import MarkdownContent from './MarkdownContent.jsx'
-import { chatWithAi } from '../services/api'
+import { chatWithAi } from '../services'
 
 const MAX_AI_REQUEST_MESSAGES = 6
 const MAX_AI_REQUEST_ASSISTANT_CONTENT_LENGTH = 700

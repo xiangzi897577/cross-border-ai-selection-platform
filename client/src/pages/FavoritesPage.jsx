@@ -4,7 +4,7 @@ import CandidateCompareTable from '../components/CandidateCompareTable.jsx'
 import EmptyState from '../components/common/EmptyState.jsx'
 import ErrorState from '../components/common/ErrorState.jsx'
 import LoadingState from '../components/common/LoadingState.jsx'
-import { getCachedFavorites, getFavorites, removeFavorite } from '../services/api'
+import { getCachedFavorites, getFavorites, removeFavorite } from '../services'
 import { formatMoney, formatPercent, formatRating, formatScore } from '../utils/format'
 import {
   getProductCategory,

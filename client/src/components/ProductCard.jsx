@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { addFavorite } from '../services/api'
+import { addFavorite } from '../services'
 import { formatMoney, formatPercent, formatRating, formatScore } from '../utils/format'
 import {
   getProductCategory,
